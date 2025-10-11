@@ -78,6 +78,30 @@
             </template>
           </q-select>
 
+          <!-- 项目总监 -->
+          <q-select
+            v-model="formData.directorUserCode"
+            :label="$t('project.director')"
+            :placeholder="$t('project.placeholder.director')"
+            :options="userOptions"
+            :loading="usersLoading"
+            :rules="[(val) => !!val || $t('project.validation.directorRequired')]"
+            option-value="userCode"
+            option-label="userName"
+            emit-value
+            map-options
+            outlined
+            dense
+          >
+            <template #no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  {{ $t('project.message.loadingUsers') }}
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+
           <!-- 日期范围 -->
           <div class="row q-col-gutter-md">
             <!-- 开始日期 -->
@@ -213,6 +237,7 @@ const formData = ref<Project>({
   projectName: '',
   description: '',
   managerUserCode: '',
+  directorUserCode: '',
   startDate: '',
   endDate: '',
   status: ProjectStatus.IN_PROGRESS,
@@ -249,6 +274,7 @@ watch(dialogVisible, async (newVal) => {
     if (props.project) {
       formData.value = {
         ...props.project,
+        directorUserCode: props.project.directorUserCode || '',
         startDate: props.project.startDate || '',
         endDate: props.project.endDate || '',
         status: props.project.status || ProjectStatus.IN_PROGRESS,
@@ -260,6 +286,7 @@ watch(dialogVisible, async (newVal) => {
         projectName: '',
         description: '',
         managerUserCode: '',
+        directorUserCode: '',
         startDate: '',
         endDate: '',
         status: ProjectStatus.IN_PROGRESS,

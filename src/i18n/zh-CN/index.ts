@@ -6,6 +6,7 @@ import project from './project';
 import timesheet from './timesheet';
 import dashboard from './dashboard';
 import department from './department';
+import reportConfig from './report-config';
 import notification from './notification';
 import errors from './errors';
 import successMessages from './success';
@@ -19,6 +20,7 @@ export default {
   roleManagement: '角色管理',
   permissionManagement: '权限管理',
   departmentManagement: '部门管理',
+  reportConfigManagement: '报表配置管理',
   projectManagement: '项目管理',
   timesheetManagement: '工时管理',
   myTimesheets: '我的工时表',
@@ -62,6 +64,7 @@ export default {
   timesheet,
   dashboard,
   department,
+  reportConfig,
   notification,
   errors,
   successMessages,

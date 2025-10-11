@@ -15,9 +15,7 @@
             :label="$t('user.userCode')"
             :placeholder="$t('user.placeholder.userCode')"
             :readonly="isEdit"
-            :rules="[
-              (val) => !!val || $t('user.validation.userCodeRequired'),
-            ]"
+            :rules="[(val) => !!val || $t('user.validation.userCodeRequired')]"
             outlined
             dense
           />
@@ -27,9 +25,7 @@
             v-model="formData.userName"
             :label="$t('user.userName')"
             :placeholder="$t('user.placeholder.userName')"
-            :rules="[
-              (val) => !!val || $t('user.validation.userNameRequired'),
-            ]"
+            :rules="[(val) => !!val || $t('user.validation.userNameRequired')]"
             outlined
             dense
           />
@@ -40,10 +36,7 @@
             type="email"
             :label="$t('user.email')"
             :placeholder="$t('user.placeholder.email')"
-            :rules="[
-              (val) => !!val || $t('user.validation.emailRequired'),
-              (val) => /.+@.+\..+/.test(val) || $t('user.validation.emailInvalid'),
-            ]"
+            :rules="[(val) => !val || /.+@.+\..+/.test(val) || $t('user.validation.emailInvalid')]"
             outlined
             dense
           />
@@ -54,8 +47,7 @@
             :label="$t('user.phoneNumber')"
             :placeholder="$t('user.placeholder.phoneNumber')"
             :rules="[
-              (val) => !!val || $t('user.validation.phoneRequired'),
-              (val) => /^1[3-9]\d{9}$/.test(val) || $t('user.validation.phoneInvalid'),
+              (val) => !val || /^1[3-9]\d{9}$/.test(val) || $t('user.validation.phoneInvalid'),
             ]"
             outlined
             dense
@@ -94,9 +86,7 @@
             :placeholder="$t('user.placeholder.roleName')"
             :options="roleOptions"
             :loading="rolesLoading"
-            :rules="[
-              (val) => (val && val.length > 0) || $t('user.validation.roleRequired'),
-            ]"
+            :rules="[(val) => (val && val.length > 0) || $t('user.validation.roleRequired')]"
             multiple
             use-chips
             emit-value
@@ -112,9 +102,6 @@
             :placeholder="$t('user.placeholder.departmentName')"
             :options="departmentOptions"
             :loading="departmentsLoading"
-            :rules="[
-              (val) => (val && val.length > 0) || $t('user.validation.departmentRequired'),
-            ]"
             multiple
             use-chips
             emit-value
@@ -140,28 +127,14 @@
           <div class="row items-center">
             <div class="col-3 text-body2">{{ $t('user.status') }}</div>
             <div class="col-9">
-              <q-option-group
-                v-model="formData.status"
-                :options="statusOptions"
-                inline
-              />
+              <q-option-group v-model="formData.status" :options="statusOptions" inline />
             </div>
           </div>
 
           <!-- 操作按钮 -->
           <div class="row justify-end q-gutter-sm">
-            <q-btn
-              :label="$t('user.cancel')"
-              color="grey"
-              flat
-              v-close-popup
-            />
-            <q-btn
-              :label="$t('user.save')"
-              type="submit"
-              color="primary"
-              :loading="loading"
-            />
+            <q-btn :label="$t('user.cancel')" color="grey" flat v-close-popup />
+            <q-btn :label="$t('user.save')" type="submit" color="primary" :loading="loading" />
           </div>
         </q-form>
       </q-card-section>
@@ -208,7 +181,7 @@ const isEdit = computed(() => !!props.user?.uuid);
 
 // 对话框标题
 const dialogTitle = computed(() =>
-  isEdit.value ? t('user.formTitle.edit') : t('user.formTitle.create')
+  isEdit.value ? t('user.formTitle.edit') : t('user.formTitle.create'),
 );
 
 // 密码显示/隐藏
@@ -333,14 +306,18 @@ watch(
       // 每次打开对话框都重新加载最新角色和部门列表
       void loadRoles();
       void loadDepartments();
-      
+
       // 初始化表单数据
       if (props.user) {
         formData.value = { ...props.user };
         // 将逗号分割的角色字符串转为数组
-        selectedRoles.value = props.user.roleName ? props.user.roleName.split(',').map(r => r.trim()) : [];
+        selectedRoles.value = props.user.roleName
+          ? props.user.roleName.split(',').map((r) => r.trim())
+          : [];
         // 将逗号分割的部门字符串转为数组
-        selectedDepartments.value = props.user.departmentName ? props.user.departmentName.split(',').map(d => d.trim()) : [];
+        selectedDepartments.value = props.user.departmentName
+          ? props.user.departmentName.split(',').map((d) => d.trim())
+          : [];
       } else {
         // 重置表单
         formData.value = {
@@ -358,7 +335,7 @@ watch(
         selectedDepartments.value = [];
       }
     }
-  }
+  },
 );
 
 // 监听选中的角色变化，同步到 formData.roleName（逗号分割）

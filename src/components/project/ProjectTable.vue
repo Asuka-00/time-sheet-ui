@@ -130,11 +130,15 @@ watch(
       rowsNumber: newPagination.rowsNumber,
     };
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 分页标签函数
-const getPaginationLabel = (firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) => {
+const getPaginationLabel = (
+  firstRowIndex: number,
+  endRowIndex: number,
+  totalRowsNumber: number,
+) => {
   return t('common.paginationLabel', {
     from: firstRowIndex,
     to: endRowIndex,
@@ -170,7 +174,6 @@ const getStatusLabel = (status?: number) => {
   }
 };
 
-
 // 表格列定义
 const columns = computed<QTableProps['columns']>(() => [
   {
@@ -191,6 +194,13 @@ const columns = computed<QTableProps['columns']>(() => [
     name: 'managerUserName',
     label: t('project.table.manager'),
     field: 'managerUserName',
+    align: 'left',
+    sortable: false,
+  },
+  {
+    name: 'directorUserName',
+    label: t('project.table.director'),
+    field: 'directorUserName',
     align: 'left',
     sortable: false,
   },

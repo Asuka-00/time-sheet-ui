@@ -4,6 +4,7 @@ export default {
   projectCode: '项目编码',
   description: '项目描述',
   manager: '项目经理',
+  director: '项目总监',
   startDate: '开始日期',
   endDate: '结束日期',
   status: '项目状态',
@@ -13,14 +14,14 @@ export default {
   createdBy: '创建人',
   updatedAt: '更新时间',
   updatedBy: '更新人',
-  
+
   // 项目状态
   statusOptions: {
     inProgress: '进行中',
     completed: '已完成',
     cancelled: '已取消',
   },
-  
+
   // 按钮
   create: '新建项目',
   edit: '编辑',
@@ -34,20 +35,21 @@ export default {
   addMember: '添加成员',
   removeMember: '移除',
   close: '关闭',
-  
+
   // 表单标题
   formTitle: {
     create: '创建项目',
     edit: '编辑项目',
     members: '项目成员管理',
   },
-  
+
   // 占位符
   placeholder: {
     projectCode: '请输入项目编码',
     projectName: '请输入项目名称',
     description: '请输入项目描述',
     manager: '请选择项目经理',
+    director: '请选择项目总监',
     startDate: '请选择开始日期',
     endDate: '请选择结束日期',
     status: '请选择项目状态',
@@ -56,7 +58,7 @@ export default {
     memberRole: '请输入成员角色（如：开发、测试、设计等）',
     joinDate: '请选择加入日期',
   },
-  
+
   // 验证
   validation: {
     projectCodeRequired: '项目编码不能为空',
@@ -65,12 +67,13 @@ export default {
     projectNameLength: '项目名称长度必须在2到100个字符之间',
     descriptionLength: '项目描述不能超过500个字符',
     managerRequired: '项目经理不能为空',
+    directorRequired: '项目总监不能为空',
     startDateRequired: '开始日期不能为空',
     endDateRequired: '结束日期不能为空',
     endDateAfterStart: '结束日期必须在开始日期之后',
     userRequired: '用户不能为空',
   },
-  
+
   // 消息
   message: {
     createSuccess: '项目创建成功',
@@ -85,13 +88,14 @@ export default {
     loadingMembers: '加载成员数据...',
     loadingUsers: '加载用户数据...',
   },
-  
+
   // 表格列
   table: {
     projectCode: '项目编码',
     projectName: '项目名称',
     description: '描述',
     manager: '项目经理',
+    director: '项目总监',
     memberCount: '成员数',
     status: '状态',
     startDate: '开始日期',
@@ -99,7 +103,7 @@ export default {
     createdAt: '创建时间',
     actions: '操作',
   },
-  
+
   // 成员表格
   memberTable: {
     userName: '成员姓名',

@@ -17,6 +17,8 @@ export interface Project {
   description?: string;
   managerUserCode: string;
   managerUserName?: string; // 项目经理姓名（从VO扩展）
+  directorUserCode: string;
+  directorUserName?: string; // 项目总监姓名（从VO扩展）
   memberCount?: number; // 成员数量（从VO扩展）
   startDate?: string;
   endDate?: string;
@@ -35,6 +37,7 @@ export interface ProjectCreateDto {
   projectName: string;
   description?: string;
   managerUserCode: string;
+  directorUserCode: string;
   startDate?: string;
   endDate?: string;
   status?: number;
@@ -49,6 +52,7 @@ export interface ProjectUpdateDto {
   projectName: string;
   description?: string;
   managerUserCode: string;
+  directorUserCode: string;
   startDate?: string;
   endDate?: string;
   status?: number;

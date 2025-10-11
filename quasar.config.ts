@@ -98,6 +98,7 @@ export default defineConfig((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
       // https: true,
+      port: process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 9000,
       open: true, // opens browser window automatically
     },
 

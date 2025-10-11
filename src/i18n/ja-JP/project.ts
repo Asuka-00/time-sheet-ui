@@ -4,6 +4,7 @@ export default {
   projectCode: 'プロジェクトコード',
   description: 'プロジェクト説明',
   manager: 'プロジェクトマネージャー',
+  director: 'プロジェクトディレクター',
   startDate: '開始日',
   endDate: '終了日',
   status: 'プロジェクトステータス',
@@ -13,14 +14,14 @@ export default {
   createdBy: '作成者',
   updatedAt: '更新日時',
   updatedBy: '更新者',
-  
+
   // プロジェクトステータス
   statusOptions: {
     inProgress: '進行中',
     completed: '完了',
     cancelled: 'キャンセル済み',
   },
-  
+
   // ボタン
   create: 'プロジェクト作成',
   edit: '編集',
@@ -34,20 +35,21 @@ export default {
   addMember: 'メンバー追加',
   removeMember: '削除',
   close: '閉じる',
-  
+
   // フォームタイトル
   formTitle: {
     create: 'プロジェクト作成',
     edit: 'プロジェクト編集',
     members: 'プロジェクトメンバー管理',
   },
-  
+
   // プレースホルダー
   placeholder: {
     projectCode: 'プロジェクトコードを入力してください',
     projectName: 'プロジェクト名を入力してください',
     description: 'プロジェクト説明を入力してください',
     manager: 'プロジェクトマネージャーを選択してください',
+    director: 'プロジェクトディレクターを選択してください',
     startDate: '開始日を選択してください',
     endDate: '終了日を選択してください',
     status: 'プロジェクトステータスを選択してください',
@@ -56,7 +58,7 @@ export default {
     memberRole: 'メンバーロールを入力してください（例：開発、テスト、デザイン等）',
     joinDate: '参加日を選択してください',
   },
-  
+
   // 検証
   validation: {
     projectCodeRequired: 'プロジェクトコードは必須です',
@@ -65,19 +67,21 @@ export default {
     projectNameLength: 'プロジェクト名は2〜100文字である必要があります',
     descriptionLength: 'プロジェクト説明は500文字以内である必要があります',
     managerRequired: 'プロジェクトマネージャーは必須です',
+    directorRequired: 'プロジェクトディレクターは必須です',
     startDateRequired: '開始日は必須です',
     endDateRequired: '終了日は必須です',
     endDateAfterStart: '終了日は開始日より後である必要があります',
     userRequired: 'ユーザーは必須です',
   },
-  
+
   // メッセージ
   message: {
     createSuccess: 'プロジェクトの作成に成功しました',
     updateSuccess: 'プロジェクトの更新に成功しました',
     deleteSuccess: 'プロジェクトの削除に成功しました',
     deleteConfirm: 'このプロジェクトを削除してもよろしいですか？',
-    deleteWarning: 'このプロジェクトを削除すると、すべてのプロジェクトメンバー記録も削除されます。この操作は元に戻せません。',
+    deleteWarning:
+      'このプロジェクトを削除すると、すべてのプロジェクトメンバー記録も削除されます。この操作は元に戻せません。',
     addMemberSuccess: 'メンバーの追加に成功しました',
     removeMemberSuccess: 'メンバーの削除に成功しました',
     removeMemberConfirm: 'このメンバーを削除してもよろしいですか？',
@@ -85,13 +89,14 @@ export default {
     loadingMembers: 'メンバーデータを読み込み中...',
     loadingUsers: 'ユーザーデータを読み込み中...',
   },
-  
+
   // テーブル列
   table: {
     projectCode: 'プロジェクトコード',
     projectName: 'プロジェクト名',
     description: '説明',
     manager: 'プロジェクトマネージャー',
+    director: 'ディレクター',
     memberCount: 'メンバー数',
     status: 'ステータス',
     startDate: '開始日',
@@ -99,7 +104,7 @@ export default {
     createdAt: '作成日時',
     actions: '操作',
   },
-  
+
   // メンバーテーブル
   memberTable: {
     userName: 'メンバー名',
@@ -109,4 +114,3 @@ export default {
     actions: '操作',
   },
 };
-
