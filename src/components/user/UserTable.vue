@@ -145,24 +145,28 @@ const columns = computed<QTableColumn[]>(() => [
     label: t('user.email'),
     field: 'email',
     align: 'left',
+    format: (val: string | undefined) => val || '-',
   },
   {
     name: 'phoneNumber',
     label: t('user.phoneNumber'),
     field: 'phoneNumber',
     align: 'left',
+    format: (val: string | undefined) => val || '-',
   },
   {
     name: 'roleName',
     label: t('user.roleName'),
     field: 'roleName',
     align: 'left',
+    format: (val: string | undefined) => val || '-',
   },
   {
     name: 'departmentName',
     label: t('user.departmentName'),
     field: 'departmentName',
     align: 'left',
+    format: (val: string | undefined) => val || '-',
   },
   {
     name: 'status',

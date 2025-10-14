@@ -88,7 +88,7 @@ import { Notify, useQuasar } from 'quasar';
 import type { QTableProps } from 'quasar';
 import { userApi } from 'src/api/user';
 import type { User, UserQuery } from 'src/types/user';
-import { omitAuditFields } from 'src/utils/data-helper';
+import { omitAuditFields, omitFields } from 'src/utils/data-helper';
 import UserTable from 'src/components/user/UserTable.vue';
 import UserDialog from 'src/components/user/UserDialog.vue';
 import ResetPasswordDialog from 'src/components/user/ResetPasswordDialog.vue';
@@ -194,8 +194,8 @@ const handleSave = async (user: User) => {
   saveLoading.value = true;
   try {
     if (user.uuid) {
-      // 更新 - 排除审计字段
-      await userApi.updateUser(omitAuditFields(user));
+      // 更新 - 排除审计字段和密码
+      await userApi.updateUser(omitFields(user, ['password']));
       Notify.create({
         type: 'positive',
         message: t('user.message.updateSuccess'),
