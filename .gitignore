@@ -31,4 +31,5 @@ yarn-error.log*
 .cursor
 
 # local .env files
-.env.local*
+.env
+.env.*

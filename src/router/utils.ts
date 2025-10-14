@@ -1,5 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router';
 import type { Permission } from 'src/types/permission';
+import type { Component } from 'vue';
+
+// 使用 Vite 的 glob import 预加载所有页面组件
+// 这样 Vite 能在构建时正确处理动态导入
+const pageModules = import.meta.glob<{ default: Component }>('../pages/**/*.vue');
 
 /**
  * 组件路径映射函数
@@ -9,10 +14,21 @@ import type { Permission } from 'src/types/permission';
 function getComponentImport(componentPath: string) {
   // 移除可能的前导斜杠和多余空格
   const path = componentPath.replace(/^\//, '').trim();
-  
-  // 使用相对路径导入（相对于当前 router 目录）
-  // ../pages/xxx 会解析为 src/pages/xxx
-  return () => import(`../${path}`);
+
+  // 构造完整的相对路径（相对于当前 router 目录）
+  const fullPath = `../pages/${path.replace(/^pages\//, '')}`;
+
+  // 从 glob 导入映射中查找对应的导入函数
+  const importFn = pageModules[fullPath];
+
+  if (!importFn) {
+    console.error(`Component not found: ${fullPath}`);
+    console.error('Available paths:', Object.keys(pageModules));
+    // 返回一个错误组件或 404 页面
+    return () => import('../pages/ErrorNotFound.vue');
+  }
+
+  return importFn;
 }
 
 /**
@@ -20,9 +36,7 @@ function getComponentImport(componentPath: string) {
  * @param permissions 权限菜单树
  * @returns 路由配置数组
  */
-export function generateRoutesFromPermissions(
-  permissions: Permission[]
-): RouteRecordRaw[] {
+export function generateRoutesFromPermissions(permissions: Permission[]): RouteRecordRaw[] {
   const routes: RouteRecordRaw[] = [];
 
   permissions.forEach((permission) => {
@@ -63,9 +77,7 @@ export function generateRoutesFromPermissions(
  * @param permissions 权限菜单树
  * @returns 扁平化的路由配置数组
  */
-export function flattenPermissionRoutes(
-  permissions: Permission[]
-): RouteRecordRaw[] {
+export function flattenPermissionRoutes(permissions: Permission[]): RouteRecordRaw[] {
   const routes: RouteRecordRaw[] = [];
 
   function flatten(perms: Permission[]) {

@@ -3,8 +3,13 @@
 
 import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
+import { loadEnv } from 'vite';
 
 export default defineConfig((ctx) => {
+  // 加载环境变量 (ctx.dev 为 true 时加载 .env.development，否则加载 .env.production)
+  const mode = ctx.dev ? 'development' : 'production';
+  const env = loadEnv(mode, process.cwd(), '');
+
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -33,6 +38,14 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
+      // Vite 会自动加载以下环境变量文件（按优先级从高到低）:
+      // 1. .env.[mode].local (本地特定模式配置，被 git 忽略)
+      // 2. .env.[mode] (特定模式配置)
+      //    - quasar dev 自动使用 .env.development
+      //    - quasar build 自动使用 .env.production
+      // 3. .env.local (本地通用配置，被 git 忽略)
+      // 4. .env (通用配置)
+
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',
@@ -51,7 +64,7 @@ export default defineConfig((ctx) => {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      // publicPath: '/',
+      publicPath: '/',
       // analyze: true,
       // env: {},
       // rawDefine: {}
@@ -98,7 +111,7 @@ export default defineConfig((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
       // https: true,
-      port: process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 9000,
+      port: env.VITE_PORT ? parseInt(env.VITE_PORT) : 9000,
       open: true, // opens browser window automatically
     },
 
