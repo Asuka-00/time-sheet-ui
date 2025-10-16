@@ -94,3 +94,25 @@ export interface ProjectMemberDto {
   role?: string;
   joinDate?: string;
 }
+
+/**
+ * 批量添加项目成员DTO
+ */
+export interface BatchAddProjectMembersDto {
+  projectCode: string;
+  userCodes: string[];
+  role?: string;
+  joinDate?: string;
+}
+
+/**
+ * 批量添加项目成员结果
+ */
+export interface BatchAddMembersResult {
+  successCount: number;
+  failedCount: number;
+  failures: Array<{
+    userCode: string;
+    reason: string;
+  }>;
+}

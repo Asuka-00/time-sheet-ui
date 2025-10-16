@@ -98,7 +98,7 @@ import type {
   ProjectQuery,
   ProjectCreateDto,
   ProjectUpdateDto,
-  ProjectMemberDto,
+  BatchAddProjectMembersDto,
 } from 'src/types/project';
 import ProjectTable from 'src/components/project/ProjectTable.vue';
 import ProjectDialog from 'src/components/project/ProjectDialog.vue';
@@ -306,27 +306,52 @@ const handleMembers = async (project: Project) => {
 };
 
 // 添加项目成员
-const handleAddMember = async (member: ProjectMemberDto) => {
+const handleAddMember = async (batchData: BatchAddProjectMembersDto) => {
   if (memberDialogRef.value) {
     memberDialogRef.value.setAddingMember(true);
   }
 
   try {
-    await projectApi.addProjectMember(member);
-    Notify.create({
-      type: 'positive',
-      message: t('project.message.addMemberSuccess'),
-    });
+    const response = await projectApi.batchAddProjectMembers(batchData);
+    
+    if (response.code === 200 && response.data) {
+      const { successCount, failedCount, failures } = response.data;
+      
+      // 展示成功消息
+      if (successCount > 0) {
+        Notify.create({
+          type: 'positive',
+          message: t('project.message.addMemberSuccess') + ` (${successCount})`,
+        });
+      }
+      
+      // 如果有失败项，展示失败详情
+      if (failedCount > 0 && failures.length > 0) {
+        const failureMessage = failures
+          .map(f => `${f.userCode}: ${f.reason}`)
+          .join('\n');
+        
+        $q.dialog({
+          title: t('project.message.partialFailTitle', { failed: failedCount }),
+          message: failureMessage,
+          ok: {
+            label: t('project.close'),
+          },
+        });
+      }
 
-    // 重新加载成员列表
-    if (currentProject.value) {
-      const response = await projectApi.getProjectMembers(currentProject.value.projectCode);
-      if (response.code === 200 && response.data && memberDialogRef.value) {
-        memberDialogRef.value.setMembers(response.data);
+      // 重新加载成员列表
+      if (currentProject.value) {
+        const membersResponse = await projectApi.getProjectMembers(
+          currentProject.value.projectCode
+        );
+        if (membersResponse.code === 200 && membersResponse.data && memberDialogRef.value) {
+          memberDialogRef.value.setMembers(membersResponse.data);
+        }
       }
     }
   } catch (error) {
-    console.error('Add member error:', error);
+    console.error('Batch add members error:', error);
   } finally {
     if (memberDialogRef.value) {
       memberDialogRef.value.setAddingMember(false);

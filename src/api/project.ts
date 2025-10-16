@@ -6,7 +6,9 @@ import type {
   ProjectCreateDto, 
   ProjectUpdateDto,
   ProjectMember,
-  ProjectMemberDto
+  ProjectMemberDto,
+  BatchAddProjectMembersDto,
+  BatchAddMembersResult
 } from 'src/types/project';
 
 /**
@@ -67,6 +69,14 @@ export const projectApi = {
    */
   addProjectMember: (data: ProjectMemberDto) => {
     return post<ApiResult<void>>('/project/member/add', data);
+  },
+
+  /**
+   * 批量添加项目成员
+   * @param data 批量添加项目成员数据
+   */
+  batchAddProjectMembers: (data: BatchAddProjectMembersDto) => {
+    return post<ApiResult<BatchAddMembersResult>>('/project/member/batch-add', data);
   },
 
   /**

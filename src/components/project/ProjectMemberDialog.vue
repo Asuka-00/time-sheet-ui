@@ -162,7 +162,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import type { Project, ProjectMember, ProjectMemberDto } from 'src/types/project';
+import type { Project, ProjectMember, BatchAddProjectMembersDto } from 'src/types/project';
 import type { User } from 'src/types/user';
 import { userApi } from 'src/api/user';
 import { formatDateTime } from 'src/utils/date-formatter';
@@ -174,7 +174,7 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: boolean): void;
-  (e: 'add-member', member: ProjectMemberDto): void;
+  (e: 'add-member', data: BatchAddProjectMembersDto): void;
   (e: 'remove-member', memberUuid: string): void;
 }
 
@@ -245,17 +245,14 @@ const handleAddMember = () => {
   if (!props.project?.projectCode) return;
   if (!newMember.value.userCode || newMember.value.userCode.length === 0) return;
 
-  // 循环处理每个选中的用户
-  newMember.value.userCode.forEach((userCode) => {
-    const memberData: ProjectMemberDto = {
-      projectCode: props.project?.projectCode || '',
-      userCode: userCode,
-      ...(newMember.value.role && { role: newMember.value.role }),
-      ...(newMember.value.joinDate && { joinDate: newMember.value.joinDate }),
-    };
+  const batchData: BatchAddProjectMembersDto = {
+    projectCode: props.project.projectCode,
+    userCodes: newMember.value.userCode,
+    ...(newMember.value.role && { role: newMember.value.role }),
+    ...(newMember.value.joinDate && { joinDate: newMember.value.joinDate }),
+  };
 
-    emit('add-member', memberData);
-  });
+  emit('add-member', batchData);
 
   // 重置表单
   newMember.value = {
