@@ -101,7 +101,7 @@ export const reportConfigApi = {
    * @param isEnabled 是否启用
    */
   toggleReportConfig: (uuid: string, isEnabled: boolean) => {
-    return put<ApiResult<void>>('/report-config/toggle', null, {
+    return put<ApiResult<void>>('/report-config/toggle', undefined, {
       params: { uuid, isEnabled },
     });
   },

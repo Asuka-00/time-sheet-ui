@@ -83,11 +83,13 @@
                     :placeholder="$t('project.placeholder.selectUser')"
                     :options="availableUsers"
                     :loading="usersLoading"
-                    :rules="[(val) => !!val || $t('project.validation.userRequired')]"
+                    :rules="[
+                      (val) => (val && val.length > 0) || $t('project.validation.userRequired'),
+                    ]"
                     option-value="userCode"
                     option-label="userName"
-                    emit-value
-                    map-options
+                    multiple
+                    use-chips
                     outlined
                     dense
                   >
@@ -203,12 +205,12 @@ const addingMember = ref(false);
 // 新成员表单
 const newMember = ref<{
   projectCode: string;
-  userCode: string;
+  userCode: string[];
   role?: string;
   joinDate: string;
 }>({
   projectCode: '',
-  userCode: '',
+  userCode: [],
   joinDate: new Date().toISOString().split('T')[0] as string,
 });
 
@@ -217,7 +219,6 @@ const availableUsers = computed(() => {
   const memberUserCodes = members.value.map((m) => m.userCode);
   return userOptions.value.filter((u) => !memberUserCodes.includes(u.userCode));
 });
-
 
 // 加载用户列表
 const loadUsers = async () => {
@@ -242,20 +243,24 @@ const setMembers = (memberList: ProjectMember[]) => {
 // 添加成员
 const handleAddMember = () => {
   if (!props.project?.projectCode) return;
+  if (!newMember.value.userCode || newMember.value.userCode.length === 0) return;
 
-  const memberData: ProjectMemberDto = {
-    projectCode: props.project.projectCode,
-    userCode: newMember.value.userCode,
-    ...(newMember.value.role && { role: newMember.value.role }),
-    ...(newMember.value.joinDate && { joinDate: newMember.value.joinDate }),
-  };
+  // 循环处理每个选中的用户
+  newMember.value.userCode.forEach((userCode) => {
+    const memberData: ProjectMemberDto = {
+      projectCode: props.project?.projectCode || '',
+      userCode: userCode,
+      ...(newMember.value.role && { role: newMember.value.role }),
+      ...(newMember.value.joinDate && { joinDate: newMember.value.joinDate }),
+    };
 
-  emit('add-member', memberData);
+    emit('add-member', memberData);
+  });
 
   // 重置表单
   newMember.value = {
     projectCode: props.project.projectCode,
-    userCode: '',
+    userCode: [],
     joinDate: new Date().toISOString().split('T')[0] as string,
   };
 };
@@ -277,7 +282,7 @@ watch(dialogVisible, async (newVal) => {
     if (props.project?.projectCode) {
       newMember.value = {
         projectCode: props.project.projectCode,
-        userCode: '',
+        userCode: [],
         joinDate: new Date().toISOString().split('T')[0] as string,
       };
     }
