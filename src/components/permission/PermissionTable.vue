@@ -17,7 +17,11 @@
         <q-td :props="props">
           <q-badge
             :color="props.row.status === 1 ? 'positive' : 'grey'"
-            :label="props.row.status === 1 ? $t('permission.statusActive') : $t('permission.statusInactive')"
+            :label="
+              props.row.status === 1
+                ? $t('permission.statusActive')
+                : $t('permission.statusInactive')
+            "
           />
         </q-td>
       </template>
@@ -31,6 +35,7 @@
             round
             color="primary"
             icon="edit"
+            v-permission="['button:permission:edit']"
             :title="$t('permission.edit')"
             @click="$emit('edit', props.row)"
           >
@@ -42,6 +47,7 @@
             round
             color="negative"
             icon="delete"
+            v-permission="['button:permission:delete']"
             :title="$t('permission.delete')"
             @click="$emit('delete', props.row)"
           >
@@ -100,11 +106,15 @@ watch(
       rowsNumber: newPagination.rowsNumber,
     };
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 分页标签函数
-const getPaginationLabel = (firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) => {
+const getPaginationLabel = (
+  firstRowIndex: number,
+  endRowIndex: number,
+  totalRowsNumber: number,
+) => {
   return t('common.paginationLabel', {
     from: firstRowIndex,
     to: endRowIndex,

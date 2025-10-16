@@ -42,7 +42,13 @@
             </div>
             <q-space />
             <div class="col-auto">
-              <q-btn color="positive" :label="$t('role.create')" icon="add" @click="handleCreate" />
+              <q-btn
+                color="positive"
+                :label="$t('role.create')"
+                icon="add"
+                v-permission="['button:role:create']"
+                @click="handleCreate"
+              />
             </div>
           </div>
         </q-card-section>
@@ -67,7 +73,6 @@
         :loading="saveLoading"
         @save="handleSave"
       />
-
     </div>
   </q-page>
 </template>
@@ -179,6 +184,7 @@ const handleSave = async (role: Role) => {
         uuid: role.uuid,
         name: role.name,
         description: role.description,
+        dataScope: role.dataScope || '',
         permissionCodes: role.permissionCodes || [],
       };
       await roleApi.updateRole(updateData);
@@ -191,6 +197,7 @@ const handleSave = async (role: Role) => {
       const createData: RoleCreateDto = {
         name: role.name,
         description: role.description,
+        dataScope: role.dataScope || '',
         permissionCodes: role.permissionCodes || [],
       };
       await roleApi.createRole(createData);

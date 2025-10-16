@@ -39,4 +39,9 @@ export default {
   },
   changePasswordSuccess: 'Password changed successfully',
   changePasswordFailed: 'Failed to change password',
+  logoutDueToIdle: 'You have been automatically logged out due to inactivity',
+  permissionUpdated: 'Your permissions have been updated',
+  websocketConnected: 'WebSocket connected successfully',
+  websocketDisconnected: 'WebSocket disconnected',
+  websocketError: 'WebSocket connection error',
 };

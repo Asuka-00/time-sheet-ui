@@ -46,6 +46,7 @@
                 color="positive"
                 :label="$t('reportConfig.create')"
                 icon="add"
+                v-permission="['button:reportConfig:create']"
                 @click="handleCreate"
               />
             </div>

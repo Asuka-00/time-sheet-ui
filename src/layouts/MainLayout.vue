@@ -14,13 +14,7 @@
         <q-space />
 
         <!-- 语言切换按钮 -->
-        <q-btn-dropdown 
-          flat 
-          dense 
-          :label="currentLocaleLabel"
-          icon="language"
-          class="q-mr-md"
-        >
+        <q-btn-dropdown flat dense :label="currentLocaleLabel" icon="language" class="q-mr-md">
           <q-list>
             <q-item
               v-for="lang in availableLocales"
@@ -146,6 +140,7 @@ import { useLocaleStore } from 'src/stores/locale';
 import type { Permission } from 'src/types/permission';
 import ChangePasswordDialog from 'src/components/auth/ChangePasswordDialog.vue';
 import { i18n, quasarLangMap } from 'src/boot/i18n';
+import { useIdleTimeout } from 'src/composables/useIdleTimeout';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -153,6 +148,16 @@ const localeStore = useLocaleStore();
 const { t } = useI18n();
 const leftDrawerOpen = ref(false);
 const showChangePasswordDialog = ref(false);
+
+// 空闲超时检测 - 可配置时间无操作自动退出（通过环境变量 VITE_IDLE_TIMEOUT_MINUTES 配置）
+useIdleTimeout({
+  onIdle: async () => {
+    // 空闲超时处理
+    authStore.logoutDueToIdle();
+    await router.push('/login');
+  },
+  immediate: authStore.isAuthenticated,
+});
 
 // 语言相关
 const currentLocale = computed(() => localeStore.currentLocale);
@@ -163,10 +168,10 @@ const availableLocales = computed(() => localeStore.availableLocales);
 const changeLocale = (locale: string) => {
   // 更新 store
   localeStore.setLocale(locale);
-  
+
   // 更新 i18n
   (i18n.global.locale as unknown as { value: string }).value = locale;
-  
+
   // 更新 Quasar 语言包
   const quasarLang = quasarLangMap[locale] ?? quasarLangMap['zh-CN'];
   if (quasarLang) {
@@ -189,12 +194,12 @@ const menuItems = computed(() => {
     createdBy: 'system',
     createdAt: new Date(),
     updatedBy: 'system',
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
-  
+
   // 获取用户权限菜单
   const userMenus = authStore.userPermissions || [];
-  
+
   // 将主页菜单项放在最前面
   return [homeMenuItem, ...userMenus];
 });

@@ -11,9 +11,11 @@ services:
       args:
         # Vite 环境变量（构建时注入）
         VITE_API_BASE_URL: http://localhost:9000
+        # 空闲超时时间（分钟），默认30分钟
+        VITE_IDLE_TIMEOUT_MINUTES: 30
     container_name: time-sheet-ui
     ports:
-      - '3000:3000'
+      - '80:3000'
     restart: unless-stopped
     networks:
       - timesheet-network

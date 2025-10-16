@@ -2,6 +2,8 @@ export default {
   roleManagement: '角色管理',
   roleName: '角色名称',
   description: '角色描述',
+  dataScope: '数据范围',
+  dataScopeAll: '所有项目',
   permissions: '权限',
   createdAt: '创建时间',
   createdBy: '创建人',
@@ -28,6 +30,7 @@ export default {
   placeholder: {
     roleName: '请输入角色名称',
     description: '请输入角色描述',
+    dataScope: '请选择数据范围',
     searchKey: '按角色名称搜索',
     selectPermissions: '请选择权限',
   },
@@ -53,6 +56,7 @@ export default {
   table: {
     roleName: '角色名称',
     description: '角色描述',
+    dataScope: '数据范围',
     createdAt: '创建时间',
     actions: '操作',
   },

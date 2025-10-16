@@ -42,7 +42,13 @@
             </div>
             <q-space />
             <div class="col-auto">
-              <q-btn color="positive" :label="$t('user.create')" icon="add" @click="handleCreate" />
+              <q-btn
+                color="positive"
+                :label="$t('user.create')"
+                icon="add"
+                v-permission="['button:user:create']"
+                @click="handleCreate"
+              />
             </div>
           </div>
         </q-card-section>
@@ -76,7 +82,6 @@
         :loading="resetPasswordLoading"
         @save="handleResetPasswordSave"
       />
-
     </div>
   </q-page>
 </template>

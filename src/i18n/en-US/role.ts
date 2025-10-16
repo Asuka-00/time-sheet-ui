@@ -2,6 +2,8 @@ export default {
   roleManagement: 'Role Management',
   roleName: 'Role Name',
   description: 'Description',
+  dataScope: 'Data Scope',
+  dataScopeAll: 'All Projects',
   permissions: 'Permissions',
   createdAt: 'Created At',
   createdBy: 'Created By',
@@ -28,6 +30,7 @@ export default {
   placeholder: {
     roleName: 'Please enter role name',
     description: 'Please enter role description',
+    dataScope: 'Please select data scope',
     searchKey: 'Search by role name',
     selectPermissions: 'Please select permissions',
   },
@@ -53,6 +56,7 @@ export default {
   table: {
     roleName: 'Role Name',
     description: 'Description',
+    dataScope: 'Data Scope',
     createdAt: 'Created At',
     actions: 'Actions',
   },

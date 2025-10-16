@@ -27,6 +27,7 @@ export default {
   timesheetReview: 'Timesheet Review',
   timesheetStatistics: 'Timesheet Statistics',
   projectManagerTimesheets: 'Project Manager Timesheets',
+  createProjectPage: 'Create Project',
   menu: {
     home: 'Home',
   },

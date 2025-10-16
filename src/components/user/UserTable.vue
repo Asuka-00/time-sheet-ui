@@ -32,6 +32,7 @@
             color="primary"
             icon="edit"
             :title="$t('user.edit')"
+            v-permission="['button:user:edit']"
             @click="$emit('edit', props.row)"
           >
             <q-tooltip>{{ $t('user.edit') }}</q-tooltip>
@@ -43,6 +44,7 @@
             color="warning"
             icon="lock_reset"
             :title="$t('user.resetPassword')"
+            v-permission="['button:user:resetPassword']"
             @click="$emit('resetPassword', props.row)"
           >
             <q-tooltip>{{ $t('user.resetPassword') }}</q-tooltip>
@@ -54,6 +56,7 @@
             color="negative"
             icon="delete"
             :title="$t('user.delete')"
+            v-permission="['button:user:delete']"
             @click="$emit('delete', props.row)"
           >
             <q-tooltip>{{ $t('user.delete') }}</q-tooltip>
@@ -112,11 +115,15 @@ watch(
       rowsNumber: newPagination.rowsNumber,
     };
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 分页标签函数
-const getPaginationLabel = (firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) => {
+const getPaginationLabel = (
+  firstRowIndex: number,
+  endRowIndex: number,
+  totalRowsNumber: number,
+) => {
   return t('common.paginationLabel', {
     from: firstRowIndex,
     to: endRowIndex,

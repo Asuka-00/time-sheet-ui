@@ -39,4 +39,9 @@ export default {
   },
   changePasswordSuccess: '密码修改成功',
   changePasswordFailed: '密码修改失败',
+  logoutDueToIdle: '由于长时间未操作，您已被自动退出登录',
+  permissionUpdated: '您的权限已更新',
+  websocketConnected: 'WebSocket 连接成功',
+  websocketDisconnected: 'WebSocket 已断开',
+  websocketError: 'WebSocket 连接错误',
 };

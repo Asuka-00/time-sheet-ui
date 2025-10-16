@@ -40,6 +40,22 @@
             rows="3"
           />
 
+          <!-- 数据范围 -->
+          <q-select
+            v-model="dataScopeArray"
+            :label="$t('role.dataScope')"
+            :placeholder="$t('role.placeholder.dataScope')"
+            :options="dataScopeOptions"
+            :loading="projectsLoading"
+            outlined
+            dense
+            emit-value
+            map-options
+            multiple
+            use-chips
+            clearable
+          />
+
           <!-- 权限树 -->
           <div>
             <div class="text-subtitle2 q-mb-sm">{{ $t('role.permissions') }}</div>
@@ -59,13 +75,13 @@
                 v-model:ticked="formData.permissionCodes"
                 :nodes="permissionTree"
                 node-key="code"
-                tick-strategy="leaf"
+                tick-strategy="strict"
                 default-expand-all
               >
                 <template #default-header="prop">
                   <div class="row items-center">
                     <q-icon :name="prop.node.icon || 'folder'" size="20px" class="q-mr-sm" />
-                    <span>{{ t(prop.node.menuName) || t(prop.node.name) }}</span>
+                    <span>{{ getNodeDisplayName(prop.node) }}</span>
                   </div>
                 </template>
               </q-tree>
@@ -94,8 +110,10 @@ import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Role } from 'src/types/role';
 import type { Permission } from 'src/types/permission';
+import type { Project } from 'src/types/project';
 import { permissionApi } from 'src/api/permission';
 import { roleApi } from 'src/api/role';
+import { projectApi } from 'src/api/project';
 
 interface Props {
   modelValue: boolean;
@@ -118,6 +136,36 @@ const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 
+// 获取节点显示名称
+const getNodeDisplayName = (node: Permission): string => {
+  // 如果有 menuName，尝试从 i18n 获取翻译
+  if (node.menuName) {
+    const key = `permission.menus.${node.menuName}`;
+    const translated = t(key);
+    // 如果翻译成功（返回值不等于键本身），返回翻译
+    if (translated !== key) {
+      return translated;
+    }
+  }
+
+  // 处理按钮权限：code 格式为 button:module:action
+  if (node.type === 'button' && node.code && node.code.startsWith('button:')) {
+    const codeParts = node.code.split(':');
+    if (codeParts.length === 3) {
+      const [, module, action] = codeParts;
+      const key = `permission.buttons.${module}.${action}`;
+      const translated = t(key);
+      // 如果翻译成功（返回值不等于键本身），返回翻译
+      if (translated !== key) {
+        return translated;
+      }
+    }
+  }
+
+  // 否则返回原始 name
+  return node.name;
+};
+
 // 对话框显示状态
 const dialogVisible = computed({
   get: () => props.modelValue,
@@ -136,12 +184,39 @@ const dialogTitle = computed(() =>
 const permissionTree = ref<Permission[]>([]);
 const permissionsLoading = ref(false);
 
+// 项目数据
+const projects = ref<Project[]>([]);
+const projectsLoading = ref(false);
+
+// 数据范围选项
+const dataScopeOptions = computed(() => {
+  const options = [
+    {
+      label: t('role.dataScopeAll'),
+      value: 'ALL',
+    },
+  ];
+
+  // 添加项目选项
+  projects.value.forEach((project) => {
+    options.push({
+      label: `${project.projectCode} - ${project.projectName}`,
+      value: project.projectCode,
+    });
+  });
+
+  return options;
+});
+
 // 表单数据
 const formData = ref<Role>({
   name: '',
   description: '',
   permissionCodes: [],
 });
+
+// 数据范围数组（用于多选）
+const dataScopeArray = ref<string[]>([]);
 
 // 加载权限树（每次打开对话框都重新加载最新数据）
 const loadPermissions = async () => {
@@ -155,6 +230,21 @@ const loadPermissions = async () => {
     console.error('Load permissions error:', error);
   } finally {
     permissionsLoading.value = false;
+  }
+};
+
+// 加载项目列表
+const loadProjects = async () => {
+  projectsLoading.value = true;
+  try {
+    const response = await projectApi.getProject();
+    if (response.code === 200 && response.data) {
+      projects.value = response.data;
+    }
+  } catch (error) {
+    console.error('Load projects error:', error);
+  } finally {
+    projectsLoading.value = false;
   }
 };
 
@@ -173,15 +263,22 @@ const loadRolePermissions = async (roleName: string) => {
 // 监听对话框打开，加载数据
 watch(dialogVisible, async (newVal) => {
   if (newVal) {
-    // 每次打开对话框都重新加载权限树
-    await loadPermissions();
+    // 每次打开对话框都重新加载权限树和项目列表
+    await Promise.all([loadPermissions(), loadProjects()]);
 
     // 如果是编辑模式，加载角色权限
     if (props.role) {
-      formData.value = { 
-        ...props.role, 
-        permissionCodes: props.role.permissionCodes || [] 
+      formData.value = {
+        ...props.role,
+        permissionCodes: props.role.permissionCodes || [],
       };
+      // 将逗号分隔的字符串转换为数组
+      dataScopeArray.value = props.role.dataScope
+        ? props.role.dataScope
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
       if (props.role.name) {
         await loadRolePermissions(props.role.name);
       }
@@ -192,13 +289,18 @@ watch(dialogVisible, async (newVal) => {
         description: '',
         permissionCodes: [],
       };
+      dataScopeArray.value = [];
     }
   }
 });
 
 // 提交表单
 const onSubmit = () => {
-  emit('save', { ...formData.value });
+  const roleData = {
+    ...formData.value,
+    ...(dataScopeArray.value.length > 0 && { dataScope: dataScopeArray.value.join(',') }),
+  };
+  emit('save', roleData);
 };
 </script>
 

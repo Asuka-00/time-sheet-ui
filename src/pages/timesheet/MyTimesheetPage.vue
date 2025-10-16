@@ -55,11 +55,11 @@
                 <template #prepend>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="filters.startDate" mask="YYYY-MM-DD">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup :label="$t('common.close')" color="primary" flat />
-                      </div>
-                    </q-date>
+                      <q-date v-model="filters.startDate" mask="YYYY-MM-DD">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup :label="$t('common.close')" color="primary" flat />
+                        </div>
+                      </q-date>
                     </q-popup-proxy>
                   </q-icon>
                 </template>
@@ -75,11 +75,11 @@
                 <template #prepend>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="filters.endDate" mask="YYYY-MM-DD">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup :label="$t('common.close')" color="primary" flat />
-                      </div>
-                    </q-date>
+                      <q-date v-model="filters.endDate" mask="YYYY-MM-DD">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup :label="$t('common.close')" color="primary" flat />
+                        </div>
+                      </q-date>
                     </q-popup-proxy>
                   </q-icon>
                 </template>
@@ -100,40 +100,34 @@
                 class="q-ml-sm"
                 @click="handleReset"
               />
+              <q-btn
+                color="positive"
+                :label="$t('timesheet.create')"
+                icon="add"
+                class="q-ml-sm"
+                v-permission="['button:timesheet:create']"
+                @click="handleCreate"
+              />
+              <q-btn
+                color="positive"
+                :label="$t('timesheet.batchCreate')"
+                icon="playlist_add"
+                outline
+                class="q-ml-sm"
+                v-permission="['button:timesheet:batchCreate']"
+                @click="handleBatchCreate"
+              />
+              <q-btn
+                color="primary"
+                :label="$t('timesheet.batchSubmit')"
+                icon="send"
+                class="q-ml-sm"
+                v-if="selectedRows.length > 0"
+                v-permission="['button:timesheet:batchSubmit']"
+                @click="handleBatchSubmit"
+              />
+              <q-space />
             </div>
-          </div>
-        </q-card-section>
-      </q-card>
-
-      <!-- 操作栏 -->
-      <q-card flat bordered class="q-mb-md">
-        <q-card-section class="row items-center">
-          <q-btn
-            color="positive"
-            :label="$t('timesheet.create')"
-            icon="add"
-            @click="handleCreate"
-          />
-          <q-btn
-            color="positive"
-            :label="$t('timesheet.batchCreate')"
-            icon="playlist_add"
-            outline
-            class="q-ml-sm"
-            @click="handleBatchCreate"
-          />
-          <q-btn
-            v-if="selectedRows.length > 0"
-            color="primary"
-            :label="$t('timesheet.batchSubmit')"
-            icon="send"
-            class="q-ml-sm"
-            @click="handleBatchSubmit"
-          />
-          <q-space />
-          <div v-if="selectedRows.length > 0" class="text-caption text-grey">
-            {{ $t('timesheet.batch.selected') }} {{ selectedRows.length }}
-            {{ $t('timesheet.batch.items') }}
           </div>
         </q-card-section>
       </q-card>
@@ -583,7 +577,7 @@ const handleSelectionChange = (selected: Timesheet[]) => {
   console.log('[MyTimesheetPage] Received selection change:', {
     newCount: selected.length,
     oldCount: selectedRows.value.length,
-    uuids: selected.map(s => s.uuid)
+    uuids: selected.map((s) => s.uuid),
   });
   selectedRows.value = selected;
   console.log('[MyTimesheetPage] After update:', selectedRows.value.length);

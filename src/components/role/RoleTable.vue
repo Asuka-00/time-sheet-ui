@@ -10,6 +10,13 @@
     flat
     @request="onRequest"
   >
+    <!-- 数据范围列 -->
+    <template #body-cell-dataScope="props">
+      <q-td :props="props">
+        {{ props.row.dataScope === 'ALL' ? $t('role.dataScopeAll') : props.row.dataScope || '-' }}
+      </q-td>
+    </template>
+
     <!-- 创建时间列 -->
     <template #body-cell-createdAt="props">
       <q-td :props="props">
@@ -27,6 +34,7 @@
           icon="edit"
           color="primary"
           size="sm"
+          v-permission="['button:role:edit']"
           @click="$emit('edit', props.row)"
         >
           <q-tooltip>{{ $t('role.edit') }}</q-tooltip>
@@ -38,6 +46,7 @@
           icon="delete"
           color="negative"
           size="sm"
+          v-permission="['button:role:delete']"
           @click="$emit('delete', props.row)"
         >
           <q-tooltip>{{ $t('role.delete') }}</q-tooltip>
@@ -95,11 +104,15 @@ watch(
       rowsNumber: newPagination.rowsNumber,
     };
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 分页标签函数
-const getPaginationLabel = (firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) => {
+const getPaginationLabel = (
+  firstRowIndex: number,
+  endRowIndex: number,
+  totalRowsNumber: number,
+) => {
   return t('common.paginationLabel', {
     from: firstRowIndex,
     to: endRowIndex,
@@ -120,6 +133,13 @@ const columns = computed<QTableProps['columns']>(() => [
     name: 'description',
     label: t('role.table.description'),
     field: 'description',
+    align: 'left',
+    sortable: false,
+  },
+  {
+    name: 'dataScope',
+    label: t('role.table.dataScope'),
+    field: 'dataScope',
     align: 'left',
     sortable: false,
   },

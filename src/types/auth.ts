@@ -39,6 +39,7 @@ export interface AuthResponse {
   refreshToken: string;
   user: UserInfo;
   permissions?: Permission[];
+  buttonPermissions?: string[];
 }
 
 /**
@@ -46,4 +47,13 @@ export interface AuthResponse {
  */
 export interface RefreshTokenRequest {
   refreshToken: string;
+}
+
+/**
+ * 权限推送数据（WebSocket）
+ */
+export interface PermissionPushDto {
+  permissions: Permission[];
+  buttonPermissions: string[];
+  timestamp: number;
 }

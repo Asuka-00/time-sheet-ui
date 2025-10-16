@@ -6,9 +6,11 @@ WORKDIR /app
 
 # 接收构建参数
 ARG VITE_API_BASE_URL
+ARG VITE_IDLE_TIMEOUT_MINUTES=30
 
 # 将构建参数设置为环境变量
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_IDLE_TIMEOUT_MINUTES=${VITE_IDLE_TIMEOUT_MINUTES}
 
 # 配置 npm 使用淘宝镜像源（适配中国网络环境）
 RUN npm config set registry https://registry.npmmirror.com && \

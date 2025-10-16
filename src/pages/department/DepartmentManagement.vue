@@ -44,6 +44,7 @@
             <div class="col-auto">
               <q-btn
                 color="positive"
+                v-permission="['button:department:create']"
                 :label="$t('department.create')"
                 icon="add"
                 @click="handleCreate"
@@ -189,7 +190,9 @@ const handleSave = async (department: Department) => {
         name: department.name,
         description: department.description,
         status: department.status,
-        ...(department.parentDepartmentName && { parentDepartmentName: department.parentDepartmentName }),
+        ...(department.parentDepartmentName && {
+          parentDepartmentName: department.parentDepartmentName,
+        }),
       };
       await departmentApi.updateDepartment(updateData);
       Notify.create({
@@ -202,7 +205,9 @@ const handleSave = async (department: Department) => {
         name: department.name,
         description: department.description,
         status: department.status,
-        ...(department.parentDepartmentName && { parentDepartmentName: department.parentDepartmentName }),
+        ...(department.parentDepartmentName && {
+          parentDepartmentName: department.parentDepartmentName,
+        }),
       };
       await departmentApi.createDepartment(createData);
       Notify.create({
@@ -266,4 +271,3 @@ onMounted(() => {
   margin: 0 auto;
 }
 </style>
-

@@ -27,6 +27,7 @@ export default {
   timesheetReview: '工数レビュー',
   timesheetStatistics: '工数統計',
   projectManagerTimesheets: 'プロジェクト工数管理',
+  createProjectPage: 'プロジェクト作成',
   menu: {
     home: 'ホーム',
   },

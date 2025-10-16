@@ -7,6 +7,7 @@ export interface Role {
   uuid?: string;
   name: string;
   description: string;
+  dataScope?: string;
   permissionCodes?: string[];
   createdBy?: string;
   createdAt?: Date | string;

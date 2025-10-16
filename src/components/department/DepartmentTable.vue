@@ -15,7 +15,9 @@
       <q-td :props="props">
         <q-badge
           :color="props.row.status === 1 ? 'positive' : 'grey'"
-          :label="props.row.status === 1 ? $t('department.statusActive') : $t('department.statusInactive')"
+          :label="
+            props.row.status === 1 ? $t('department.statusActive') : $t('department.statusInactive')
+          "
         />
       </q-td>
     </template>
@@ -36,6 +38,7 @@
           round
           icon="edit"
           color="primary"
+          v-permission="['button:department:edit']"
           size="sm"
           @click="$emit('edit', props.row)"
         >
@@ -47,6 +50,7 @@
           round
           icon="delete"
           color="negative"
+          v-permission="['button:department:delete']"
           size="sm"
           @click="$emit('delete', props.row)"
         >
@@ -105,11 +109,15 @@ watch(
       rowsNumber: newPagination.rowsNumber,
     };
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 分页标签函数
-const getPaginationLabel = (firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) => {
+const getPaginationLabel = (
+  firstRowIndex: number,
+  endRowIndex: number,
+  totalRowsNumber: number,
+) => {
   return t('common.paginationLabel', {
     from: firstRowIndex,
     to: endRowIndex,
@@ -170,4 +178,3 @@ const onRequest = (evt: Parameters<NonNullable<QTableProps['onRequest']>>[0]) =>
   width: 100%;
 }
 </style>
-

@@ -104,6 +104,29 @@ instance.interceptors.response.use(
     const loadingStore = useLoadingStore();
     loadingStore.hideLoading();
 
+    // 检查业务错误码
+    const { data } = response;
+    if (data && typeof data === 'object' && 'code' in data) {
+      // 如果响应中包含code字段，且不是200，视为业务错误
+      if (data.code !== 200) {
+        const t = i18n.global.t;
+        // 获取错误消息
+        const errorMessage = data.errorCode
+          ? getErrorMessage(data.errorCode, data.message)
+          : data.message || t('request.requestFailed');
+
+        // 显示错误提示
+        Notify.create({
+          type: 'negative',
+          message: errorMessage,
+          position: 'top',
+        });
+
+        // 抛出错误，阻止后续的成功处理
+        return Promise.reject(new Error(errorMessage));
+      }
+    }
+
     // 返回响应数据
     return response.data;
   },
@@ -160,60 +183,60 @@ instance.interceptors.response.use(
             break;
           }
 
-        // 如果正在刷新令牌，将请求加入队列
-        if (isRefreshing) {
-          return new Promise((resolve, reject) => {
-            failedQueue.push({ resolve, reject });
-          }).then(() => {
-            // 重新发送原始请求
-            if (originalRequest) {
-              const authStore = useAuthStore();
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${authStore.accessToken}`;
+          // 如果正在刷新令牌，将请求加入队列
+          if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+              failedQueue.push({ resolve, reject });
+            }).then(() => {
+              // 重新发送原始请求
+              if (originalRequest) {
+                const authStore = useAuthStore();
+                if (originalRequest.headers) {
+                  originalRequest.headers.Authorization = `Bearer ${authStore.accessToken}`;
+                }
+                return instance(originalRequest);
               }
-              return instance(originalRequest);
-            }
-            return Promise.reject(new Error(t('request.requestConfigLost')));
-          });
-        }
+              return Promise.reject(new Error(t('request.requestConfigLost')));
+            });
+          }
 
-        // 开始刷新令牌
-        isRefreshing = true;
+          // 开始刷新令牌
+          isRefreshing = true;
 
-        try {
-          const authStore = useAuthStore();
-          const refreshSuccess = await authStore.refreshAccessToken();
+          try {
+            const authStore = useAuthStore();
+            const refreshSuccess = await authStore.refreshAccessToken();
 
-          if (refreshSuccess) {
-            // 刷新成功，处理队列中的请求
-            processQueue(null, authStore.accessToken);
+            if (refreshSuccess) {
+              // 刷新成功，处理队列中的请求
+              processQueue(null, authStore.accessToken);
 
-            // 重新发送原始请求
-            if (originalRequest) {
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${authStore.accessToken}`;
+              // 重新发送原始请求
+              if (originalRequest) {
+                if (originalRequest.headers) {
+                  originalRequest.headers.Authorization = `Bearer ${authStore.accessToken}`;
+                }
+                return instance(originalRequest);
               }
-              return instance(originalRequest);
+            } else {
+              throw new Error(t('request.refreshTokenFailed'));
             }
-          } else {
-            throw new Error(t('request.refreshTokenFailed'));
+          } catch {
+            // 刷新失败，处理队列中的请求
+            processQueue(new Error(t('request.refreshTokenFailed')), null);
+            if (!data.errorCode) {
+              errorMessage = t('request.sessionExpired');
+            }
+            // 跳转到登录页
+            const currentPath = window.location.hash.slice(1) || '/';
+            if (!currentPath.startsWith('/login')) {
+              window.location.hash = `/login?redirect=${encodeURIComponent(currentPath)}`;
+            }
+          } finally {
+            isRefreshing = false;
           }
-        } catch {
-          // 刷新失败，处理队列中的请求
-          processQueue(new Error(t('request.refreshTokenFailed')), null);
-          if (!data.errorCode) {
-            errorMessage = t('request.sessionExpired');
-          }
-          // 跳转到登录页
-          const currentPath = window.location.hash.slice(1) || '/';
-          if (!currentPath.startsWith('/login')) {
-            window.location.hash = `/login?redirect=${encodeURIComponent(currentPath)}`;
-          }
-        } finally {
-          isRefreshing = false;
+          break;
         }
-        break;
-      }
         case 403:
           errorMessage = t('request.forbidden');
           break;

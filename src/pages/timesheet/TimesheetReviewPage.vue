@@ -5,12 +5,7 @@
       <div class="row items-center q-mb-md">
         <div class="text-h5">{{ $t('timesheet.timesheetReview') }}</div>
         <q-space />
-        <q-chip
-          v-if="pagination.rowsNumber > 0"
-          color="warning"
-          text-color="white"
-          icon="pending"
-        >
+        <q-chip v-if="pagination.rowsNumber > 0" color="warning" text-color="white" icon="pending">
           {{ $t('timesheet.review.pendingCount') }}: {{ pagination.rowsNumber }}
         </q-chip>
       </div>
@@ -105,6 +100,7 @@
             color="positive"
             :label="$t('timesheet.batchApprove')"
             icon="check"
+            v-permission="['button:timesheetReview:batchApprove']"
             @click="handleBatchApprove"
           />
           <q-btn
@@ -112,11 +108,13 @@
             :label="$t('timesheet.batchReject')"
             icon="close"
             class="q-ml-sm"
+            v-permission="['button:timesheetReview:batchReject']"
             @click="handleBatchReject"
           />
           <q-space />
           <div class="text-caption text-grey">
-            {{ $t('timesheet.batch.selected') }} {{ selectedRows.length }} {{ $t('timesheet.batch.items') }}
+            {{ $t('timesheet.batch.selected') }} {{ selectedRows.length }}
+            {{ $t('timesheet.batch.items') }}
           </div>
         </q-card-section>
       </q-card>
@@ -147,10 +145,7 @@
       />
 
       <!-- 工时详情对话框 -->
-      <TimesheetDetailDialog
-        v-model="detailDialogVisible"
-        :timesheet="detailTimesheet"
-      />
+      <TimesheetDetailDialog v-model="detailDialogVisible" :timesheet="detailTimesheet" />
     </div>
   </q-page>
 </template>
@@ -162,11 +157,7 @@ import { Notify, useQuasar } from 'quasar';
 import type { QTableProps } from 'quasar';
 import { timesheetApi } from 'src/api/timesheet';
 import { projectApi } from 'src/api/project';
-import type {
-  Timesheet,
-  TimesheetQuery,
-  ReviewTimesheetDto,
-} from 'src/types/timesheet';
+import type { Timesheet, TimesheetQuery, ReviewTimesheetDto } from 'src/types/timesheet';
 import type { Project } from 'src/types/project';
 import { TimesheetStatus } from 'src/types/timesheet';
 import TimesheetTable from 'src/components/timesheet/TimesheetTable.vue';
@@ -299,7 +290,11 @@ const handleReview = (data: { timesheet: Timesheet; action: 'approve' | 'reject'
 };
 
 // 确认审核
-const handleReviewConfirm = async (data: { uuid: string; action: 'approve' | 'reject'; comment?: string }) => {
+const handleReviewConfirm = async (data: {
+  uuid: string;
+  action: 'approve' | 'reject';
+  comment?: string;
+}) => {
   reviewLoading.value = true;
   try {
     const reviewData: ReviewTimesheetDto = {

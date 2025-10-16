@@ -49,6 +49,7 @@
           icon="edit"
           color="primary"
           size="sm"
+          v-permission="['button:project:edit']"
           @click="$emit('edit', props.row)"
         >
           <q-tooltip>{{ $t('project.edit') }}</q-tooltip>
@@ -60,6 +61,7 @@
           icon="group"
           color="info"
           size="sm"
+          v-permission="['button:project:members']"
           @click="$emit('members', props.row)"
         >
           <q-tooltip>{{ $t('project.manageMembers') }}</q-tooltip>
@@ -71,6 +73,7 @@
           icon="delete"
           color="negative"
           size="sm"
+          v-permission="['button:project:delete']"
           @click="$emit('delete', props.row)"
         >
           <q-tooltip>{{ $t('project.delete') }}</q-tooltip>

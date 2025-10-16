@@ -68,6 +68,7 @@
           icon="edit"
           color="primary"
           size="sm"
+          v-permission="['button:reportConfig:edit']"
           @click="$emit('edit', props.row)"
         >
           <q-tooltip>{{ $t('reportConfig.edit') }}</q-tooltip>
@@ -79,6 +80,7 @@
           :icon="props.row.isEnabled ? 'toggle_on' : 'toggle_off'"
           :color="props.row.isEnabled ? 'positive' : 'grey'"
           size="sm"
+          v-permission="['button:reportConfig:toggle']"
           @click="$emit('toggle', props.row)"
         >
           <q-tooltip>{{
@@ -92,6 +94,7 @@
           icon="delete"
           color="negative"
           size="sm"
+          v-permission="['button:reportConfig:delete']"
           @click="$emit('delete', props.row)"
         >
           <q-tooltip>{{ $t('reportConfig.delete') }}</q-tooltip>

@@ -39,5 +39,9 @@ export default {
   },
   changePasswordSuccess: 'パスワードが変更されました',
   changePasswordFailed: 'パスワードの変更に失敗しました',
+  logoutDueToIdle: '長時間操作がなかったため、自動的にログアウトされました',
+  permissionUpdated: '権限が更新されました',
+  websocketConnected: 'WebSocket接続に成功しました',
+  websocketDisconnected: 'WebSocketが切断されました',
+  websocketError: 'WebSocket接続エラー',
 };
-

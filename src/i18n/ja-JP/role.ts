@@ -2,6 +2,8 @@ export default {
   roleManagement: 'ロール管理',
   roleName: 'ロール名',
   description: 'ロール説明',
+  dataScope: 'データ範囲',
+  dataScopeAll: 'すべてのプロジェクト',
   permissions: '権限',
   createdAt: '作成日時',
   createdBy: '作成者',
@@ -28,6 +30,7 @@ export default {
   placeholder: {
     roleName: 'ロール名を入力してください',
     description: 'ロール説明を入力してください',
+    dataScope: 'データ範囲を選択してください',
     searchKey: 'ロール名で検索',
     selectPermissions: '権限を選択してください',
   },
@@ -53,6 +56,7 @@ export default {
   table: {
     roleName: 'ロール名',
     description: 'ロール説明',
+    dataScope: 'データ範囲',
     createdAt: '作成日時',
     actions: '操作',
   },

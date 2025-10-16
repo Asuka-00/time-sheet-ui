@@ -43,6 +43,7 @@
               color="primary"
               icon="edit"
               size="sm"
+              v-permission="['button:timesheet:edit']"
               @click="$emit('edit', props.row)"
             >
               <q-tooltip>{{ $t('timesheet.edit') }}</q-tooltip>
@@ -56,6 +57,7 @@
               color="negative"
               icon="delete"
               size="sm"
+              v-permission="['button:timesheet:delete']"
               @click="$emit('delete', props.row)"
             >
               <q-tooltip>{{ $t('timesheet.delete') }}</q-tooltip>
@@ -69,6 +71,7 @@
               color="positive"
               icon="send"
               size="sm"
+              v-permission="['button:timesheet:submit']"
               @click="$emit('submit', props.row)"
             >
               <q-tooltip>{{ $t('timesheet.submit') }}</q-tooltip>
@@ -82,6 +85,7 @@
               color="warning"
               icon="undo"
               size="sm"
+              v-permission="['button:timesheet:withdraw']"
               @click="$emit('withdraw', props.row)"
             >
               <q-tooltip>{{ $t('timesheet.withdraw') }}</q-tooltip>
@@ -97,6 +101,7 @@
               color="positive"
               icon="check"
               size="sm"
+              v-permission="['button:timesheetReview:approve']"
               @click="$emit('review', { timesheet: props.row, action: 'approve' })"
             >
               <q-tooltip>{{ $t('timesheet.approve') }}</q-tooltip>
@@ -109,6 +114,7 @@
               color="negative"
               icon="close"
               size="sm"
+              v-permission="['button:timesheetReview:reject']"
               @click="$emit('review', { timesheet: props.row, action: 'reject' })"
             >
               <q-tooltip>{{ $t('timesheet.reject') }}</q-tooltip>
@@ -215,11 +221,15 @@ watch(
       rowsNumber: newPagination.rowsNumber,
     };
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 分页标签函数
-const getPaginationLabel = (firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) => {
+const getPaginationLabel = (
+  firstRowIndex: number,
+  endRowIndex: number,
+  totalRowsNumber: number,
+) => {
   return t('common.paginationLabel', {
     from: firstRowIndex,
     to: endRowIndex,
@@ -340,5 +350,17 @@ const handleRequest = (evt: Parameters<NonNullable<QTableProps['onRequest']>>[0]
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// 调整操作按钮容器的间距，避免增加行高
+:deep(.q-gutter-xs) {
+  margin: 0 !important;
+  gap: 4px;
+}
+
+// 精确控制表格单元格的垂直 padding，保持行高为 48px
+:deep(.q-table tbody td) {
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 </style>

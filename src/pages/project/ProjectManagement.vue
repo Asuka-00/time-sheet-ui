@@ -46,6 +46,7 @@
                 color="positive"
                 :label="$t('project.create')"
                 icon="add"
+                v-permission="['button:project:create']"
                 @click="handleCreate"
               />
             </div>

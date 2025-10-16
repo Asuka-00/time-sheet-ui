@@ -27,6 +27,7 @@ export default {
   timesheetReview: '工时审核',
   timesheetStatistics: '工时统计',
   projectManagerTimesheets: '项目工时管理',
+  createProjectPage: '新增项目',
   menu: {
     home: '主页',
   },
