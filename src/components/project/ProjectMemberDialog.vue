@@ -205,7 +205,7 @@ const addingMember = ref(false);
 // 新成员表单
 const newMember = ref<{
   projectCode: string;
-  userCode: string[];
+  userCode: User[];
   role?: string;
   joinDate: string;
 }>({
@@ -247,7 +247,7 @@ const handleAddMember = () => {
 
   const batchData: BatchAddProjectMembersDto = {
     projectCode: props.project.projectCode,
-    userCodes: newMember.value.userCode,
+    userCodes: newMember.value.userCode.map((user) => user.userCode),
     ...(newMember.value.role && { role: newMember.value.role }),
     ...(newMember.value.joinDate && { joinDate: newMember.value.joinDate }),
   };
