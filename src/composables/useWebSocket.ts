@@ -31,8 +31,13 @@ class WebSocketClient {
    * 获取 WebSocket 服务器 URL
    */
   private getSocketUrl(): string {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-    // 移除末尾的斜杠
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    // 如果 baseUrl 是相对路径（以 / 开头），返回空字符串
+    // 这样 Socket.IO 会连接到当前域名，配合 nginx 的 /socket.io 代理
+    if (baseUrl.startsWith('/')) {
+      return '';
+    }
+    // 否则使用完整 URL（开发环境）
     return baseUrl.replace(/\/$/, '');
   }
 
