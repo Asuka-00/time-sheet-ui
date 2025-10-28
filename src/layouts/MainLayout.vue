@@ -6,7 +6,7 @@
 
         <q-toolbar-title>
           <q-avatar>
-            <img src="public/favicon.ico" />
+            <img src="/favicon.ico" />
           </q-avatar>
           {{ $t('common.appTitle') }}
         </q-toolbar-title>
