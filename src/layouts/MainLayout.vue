@@ -6,7 +6,7 @@
 
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+            <img src="public/favicon.ico" />
           </q-avatar>
           {{ $t('common.appTitle') }}
         </q-toolbar-title>
