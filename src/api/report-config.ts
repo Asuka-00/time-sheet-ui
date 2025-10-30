@@ -19,11 +19,12 @@ const arrayToString = (arr?: string[]): string => {
  */
 export interface ReportConfigFormData {
   uuid?: string;
-  reportType: string;
   reportName: string;
   cronExpression: string;
   recipientEmailsArray?: string[];
+  ccEmailsArray?: string[];
   projectCodes?: string[];
+  monthOffset: number;
   isEnabled: boolean;
   description?: string;
 }
@@ -40,11 +41,12 @@ export const reportConfigApi = {
     // 转换数组字段为字符串格式
     const formData = data as ReportConfigFormData;
     const requestData = {
-      reportType: formData.reportType,
       reportName: formData.reportName,
       cronExpression: formData.cronExpression,
       recipientEmails: arrayToString(formData.recipientEmailsArray),
+      ccEmails: arrayToString(formData.ccEmailsArray),
       filterConditions: arrayToString(formData.projectCodes),
+      monthOffset: formData.monthOffset !== undefined ? formData.monthOffset : -1,
       isEnabled: formData.isEnabled,
       ...(formData.description && { description: formData.description }),
     };
@@ -76,11 +78,12 @@ export const reportConfigApi = {
     const formData = data as ReportConfigFormData;
     const requestData = {
       uuid: formData.uuid,
-      reportType: formData.reportType,
       reportName: formData.reportName,
       cronExpression: formData.cronExpression,
       recipientEmails: arrayToString(formData.recipientEmailsArray),
+      ccEmails: arrayToString(formData.ccEmailsArray),
       filterConditions: arrayToString(formData.projectCodes),
+      monthOffset: formData.monthOffset !== undefined ? formData.monthOffset : -1,
       isEnabled: formData.isEnabled,
       ...(formData.description && { description: formData.description }),
     };
@@ -103,6 +106,16 @@ export const reportConfigApi = {
   toggleReportConfig: (uuid: string, isEnabled: boolean) => {
     return put<ApiResult<void>>('/report-config/toggle', undefined, {
       params: { uuid, isEnabled },
+    });
+  },
+
+  /**
+   * 测试执行报表任务
+   * @param uuid 配置ID
+   */
+  testExecuteReportTask: (uuid: string) => {
+    return post<ApiResult<void>>('/report-config/test-execute', undefined, {
+      params: { uuid },
     });
   },
 };

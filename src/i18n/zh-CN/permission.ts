@@ -160,6 +160,7 @@ export default {
     reportConfig: {
       create: '创建报表配置',
       edit: '编辑报表配置',
+      test: '测试执行报表配置',
       toggle: '启用/禁用报表配置',
       delete: '删除报表配置',
     },

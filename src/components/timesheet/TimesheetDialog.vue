@@ -231,7 +231,7 @@ watch(
   (newVal) => {
     if (newVal) {
       void loadMyProjects();
-      
+
       // 重置表单数据
       if (props.timesheet) {
         // 编辑模式

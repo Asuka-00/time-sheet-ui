@@ -62,6 +62,7 @@
           :pagination="pagination"
           @request="handleTableRequest"
           @edit="handleEdit"
+          @test="handleTestConfirm"
           @delete="handleDeleteConfirm"
           @toggle="handleToggleConfirm"
         />
@@ -81,7 +82,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Notify, useQuasar } from 'quasar';
+import { Notify, Loading, useQuasar } from 'quasar';
 import type { QTableProps } from 'quasar';
 import { reportConfigApi, type ReportConfigFormData } from 'src/api/report-config';
 import type { ReportConfig, ReportConfigQuery } from 'src/types/report-config';
@@ -189,11 +190,12 @@ const handleSave = async (reportConfig: ReportConfig) => {
       // 更新 - 构造表单数据（API层会处理数组到字符串的转换）
       const updateData: ReportConfigFormData = {
         uuid: reportConfig.uuid,
-        reportType: reportConfig.reportType,
         reportName: reportConfig.reportName,
         cronExpression: reportConfig.cronExpression,
         recipientEmailsArray: reportConfig.recipientEmailsArray || [],
+        ccEmailsArray: reportConfig.ccEmailsArray || [],
         projectCodes: reportConfig.projectCodes || [],
+        monthOffset: reportConfig.monthOffset,
         isEnabled: reportConfig.isEnabled,
         ...(reportConfig.description ? { description: reportConfig.description } : {}),
       };
@@ -205,11 +207,12 @@ const handleSave = async (reportConfig: ReportConfig) => {
     } else {
       // 创建 - 构造表单数据（API层会处理数组到字符串的转换）
       const createData: ReportConfigFormData = {
-        reportType: reportConfig.reportType,
         reportName: reportConfig.reportName,
         cronExpression: reportConfig.cronExpression,
         recipientEmailsArray: reportConfig.recipientEmailsArray || [],
+        ccEmailsArray: reportConfig.ccEmailsArray || [],
         projectCodes: reportConfig.projectCodes || [],
+        monthOffset: reportConfig.monthOffset,
         isEnabled: reportConfig.isEnabled,
         ...(reportConfig.description ? { description: reportConfig.description } : {}),
       };
@@ -226,6 +229,49 @@ const handleSave = async (reportConfig: ReportConfig) => {
     console.error('Save report config error:', error);
   } finally {
     saveLoading.value = false;
+  }
+};
+
+// 测试执行确认
+const handleTestConfirm = (reportConfig: ReportConfig) => {
+  $q.dialog({
+    title: t('reportConfig.message.testTitle'),
+    message: t('reportConfig.message.testConfirm'),
+    ok: {
+      label: t('reportConfig.test'),
+      color: 'info',
+    },
+    cancel: {
+      label: t('reportConfig.cancel'),
+      flat: true,
+    },
+  }).onOk(() => {
+    void handleTestExecute(reportConfig);
+  });
+};
+
+// 测试执行报表任务
+const handleTestExecute = async (reportConfig: ReportConfig) => {
+  if (!reportConfig.uuid) return;
+
+  Loading.show({
+    message: t('reportConfig.message.testExecuting'),
+  });
+
+  try {
+    await reportConfigApi.testExecuteReportTask(reportConfig.uuid);
+    Notify.create({
+      type: 'positive',
+      message: t('reportConfig.message.testSuccess'),
+    });
+  } catch (error) {
+    console.error('Test execute report config error:', error);
+    Notify.create({
+      type: 'negative',
+      message: t('reportConfig.message.testFailed'),
+    });
+  } finally {
+    Loading.hide();
   }
 };
 

@@ -160,6 +160,7 @@ export default {
     reportConfig: {
       create: 'Create Report Config',
       edit: 'Edit Report Config',
+      test: 'Test Execute Report Config',
       toggle: 'Toggle Report Config',
       delete: 'Delete Report Config',
     },

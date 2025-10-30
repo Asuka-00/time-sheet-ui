@@ -95,6 +95,23 @@ export default {
     },
   },
 
+  // 报表配置模块
+  REPORT_CONFIG: {
+    CREATE: {
+      TYPE_ALREADY_EXISTS: '报表类型已存在',
+    },
+    UPDATE: {
+      NOT_FOUND: '报表配置不存在',
+    },
+    DELETE: {
+      NOT_FOUND: '报表配置不存在',
+    },
+    COMMON: {
+      NOT_FOUND: '报表配置不存在',
+      ID_REQUIRED: '报表配置ID不能为空',
+    },
+  },
+
   // 工时模块
   TIMESHEET: {
     CREATE: {
@@ -103,6 +120,7 @@ export default {
       NOT_PROJECT_MEMBER: '您不是该项目成员',
       FUTURE_DATE_NOT_ALLOWED: '不能填报未来日期的工时',
       DUPLICATE_RECORD: '该日期已存在该项目的工时记录',
+      HOLIDAY_NOT_ALLOWED: '不能在节假日填报工时',
     },
     SUBMIT: {
       NOT_OWNER: '只能提交自己的工时记录',
@@ -119,6 +137,7 @@ export default {
       PROJECT_NOT_IN_PROGRESS: '只能为进行中的项目填报工时',
       NOT_PROJECT_MEMBER: '您不是该项目成员',
       FUTURE_DATE_NOT_ALLOWED: '不能填报未来日期的工时',
+      HOLIDAY_NOT_ALLOWED: '不能在节假日填报工时',
     },
     DELETE: {
       NOT_OWNER: '只能删除自己的工时记录',
@@ -132,5 +151,15 @@ export default {
       NOT_FOUND: '工时记录不存在',
     },
   },
-};
 
+  // WebSocket模块
+  WEBSOCKET: {
+    AUTH: {
+      NO_TOKEN: 'WebSocket连接缺少认证令牌',
+      INVALID_TOKEN: 'WebSocket认证令牌无效',
+    },
+    CONNECTION: {
+      FAILED: 'WebSocket连接失败',
+    },
+  },
+};

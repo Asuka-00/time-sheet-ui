@@ -95,6 +95,23 @@ export default {
     },
   },
 
+  // レポート設定モジュール
+  REPORT_CONFIG: {
+    CREATE: {
+      TYPE_ALREADY_EXISTS: 'レポートタイプは既に存在します',
+    },
+    UPDATE: {
+      NOT_FOUND: 'レポート設定が存在しません',
+    },
+    DELETE: {
+      NOT_FOUND: 'レポート設定が存在しません',
+    },
+    COMMON: {
+      NOT_FOUND: 'レポート設定が存在しません',
+      ID_REQUIRED: 'レポート設定IDは必須です',
+    },
+  },
+
   // 工数モジュール
   TIMESHEET: {
     CREATE: {
@@ -103,6 +120,7 @@ export default {
       NOT_PROJECT_MEMBER: 'このプロジェクトのメンバーではありません',
       FUTURE_DATE_NOT_ALLOWED: '未来の日付の工数は記録できません',
       DUPLICATE_RECORD: 'この日付には既に同じプロジェクトの工数記録が存在します',
+      HOLIDAY_NOT_ALLOWED: '祝日には工数を記録できません',
     },
     SUBMIT: {
       NOT_OWNER: '自分の工数記録のみ提出できます',
@@ -119,6 +137,7 @@ export default {
       PROJECT_NOT_IN_PROGRESS: '進行中のプロジェクトのみ工数を記録できます',
       NOT_PROJECT_MEMBER: 'このプロジェクトのメンバーではありません',
       FUTURE_DATE_NOT_ALLOWED: '未来の日付の工数は記録できません',
+      HOLIDAY_NOT_ALLOWED: '祝日には工数を記録できません',
     },
     DELETE: {
       NOT_OWNER: '自分の工数記録のみ削除できます',
@@ -132,5 +151,15 @@ export default {
       NOT_FOUND: '工数記録が存在しません',
     },
   },
-};
 
+  // WebSocketモジュール
+  WEBSOCKET: {
+    AUTH: {
+      NO_TOKEN: 'WebSocket接続に認証トークンがありません',
+      INVALID_TOKEN: '無効なWebSocket認証トークンです',
+    },
+    CONNECTION: {
+      FAILED: 'WebSocket接続に失敗しました',
+    },
+  },
+};

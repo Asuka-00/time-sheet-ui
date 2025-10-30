@@ -37,6 +37,43 @@
       </q-td>
     </template>
 
+    <!-- 抄送邮箱列 -->
+    <template #body-cell-ccEmails="props">
+      <q-td :props="props">
+        <div class="row q-gutter-xs">
+          <q-chip
+            v-for="(email, index) in (props.row.ccEmailsArray || []).slice(0, 2)"
+            :key="index"
+            dense
+            size="sm"
+            color="secondary"
+            text-color="white"
+          >
+            {{ email }}
+          </q-chip>
+          <q-chip
+            v-if="(props.row.ccEmailsArray || []).length > 2"
+            dense
+            size="sm"
+            color="grey"
+            text-color="white"
+          >
+            +{{ (props.row.ccEmailsArray || []).length - 2 }}
+          </q-chip>
+          <span v-if="!(props.row.ccEmailsArray || []).length" class="text-grey">-</span>
+        </div>
+      </q-td>
+    </template>
+
+    <!-- 月份偏移量列 -->
+    <template #body-cell-monthOffset="props">
+      <q-td :props="props">
+        <q-badge :color="getMonthOffsetColor(props.row.monthOffset)">
+          {{ getMonthOffsetLabel(props.row.monthOffset) }}
+        </q-badge>
+      </q-td>
+    </template>
+
     <!-- 启用状态列 -->
     <template #body-cell-isEnabled="props">
       <q-td :props="props">
@@ -72,6 +109,18 @@
           @click="$emit('edit', props.row)"
         >
           <q-tooltip>{{ $t('reportConfig.edit') }}</q-tooltip>
+        </q-btn>
+        <q-btn
+          flat
+          dense
+          round
+          icon="play_arrow"
+          color="info"
+          size="sm"
+          v-permission="['button:reportConfig:test']"
+          @click="$emit('test', props.row)"
+        >
+          <q-tooltip>{{ $t('reportConfig.test') }}</q-tooltip>
         </q-btn>
         <q-btn
           flat
@@ -124,6 +173,7 @@ interface Props {
 interface Emits {
   (e: 'request', evt: Parameters<NonNullable<QTableProps['onRequest']>>[0]): void;
   (e: 'edit', reportConfig: ReportConfig): void;
+  (e: 'test', reportConfig: ReportConfig): void;
   (e: 'delete', reportConfig: ReportConfig): void;
   (e: 'toggle', reportConfig: ReportConfig): void;
 }
@@ -172,13 +222,6 @@ const getPaginationLabel = (
 // 表格列配置
 const columns = computed<QTableColumn[]>(() => [
   {
-    name: 'reportType',
-    label: t('reportConfig.reportType'),
-    field: 'reportType',
-    align: 'left',
-    sortable: true,
-  },
-  {
     name: 'reportName',
     label: t('reportConfig.reportName'),
     field: 'reportName',
@@ -196,6 +239,18 @@ const columns = computed<QTableColumn[]>(() => [
     label: t('reportConfig.recipientEmails'),
     field: 'recipientEmails',
     align: 'left',
+  },
+  {
+    name: 'ccEmails',
+    label: t('reportConfig.ccEmails'),
+    field: 'ccEmails',
+    align: 'left',
+  },
+  {
+    name: 'monthOffset',
+    label: t('reportConfig.monthOffset'),
+    field: 'monthOffset',
+    align: 'center',
   },
   {
     name: 'isEnabled',
@@ -217,6 +272,27 @@ const columns = computed<QTableColumn[]>(() => [
     align: 'center',
   },
 ]);
+
+// 获取月份偏移量标签
+const getMonthOffsetLabel = (offset: number): string => {
+  const labels: Record<number, string> = {
+    0: t('reportConfig.monthOffsetOptions.currentMonth'),
+    '-1': t('reportConfig.monthOffsetOptions.lastMonth'),
+    '-2': t('reportConfig.monthOffsetOptions.twoMonthsAgo'),
+    '-3': t('reportConfig.monthOffsetOptions.threeMonthsAgo'),
+    '-4': t('reportConfig.monthOffsetOptions.fourMonthsAgo'),
+    '-5': t('reportConfig.monthOffsetOptions.fiveMonthsAgo'),
+    '-6': t('reportConfig.monthOffsetOptions.sixMonthsAgo'),
+  };
+  return labels[offset] || `${offset}${t('reportConfig.monthsAgo')}`;
+};
+
+// 获取月份偏移量颜色
+const getMonthOffsetColor = (offset: number): string => {
+  if (offset === 0) return 'info';
+  if (offset === -1) return 'primary';
+  return 'grey';
+};
 
 // 处理分页请求
 const onRequest = (evt: Parameters<NonNullable<QTableProps['onRequest']>>[0]) => {

@@ -160,6 +160,7 @@ export default {
     reportConfig: {
       create: 'レポート設定作成',
       edit: 'レポート設定編集',
+      test: 'レポート設定テスト実行',
       toggle: 'レポート設定切替',
       delete: 'レポート設定削除',
     },

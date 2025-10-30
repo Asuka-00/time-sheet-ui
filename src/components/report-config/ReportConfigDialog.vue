@@ -9,23 +9,6 @@
 
       <q-card-section>
         <q-form @submit="onSubmit" class="q-gutter-md">
-          <!-- 报表类型 -->
-          <q-input
-            v-model="formData.reportType"
-            :label="$t('reportConfig.reportType')"
-            :placeholder="$t('reportConfig.placeholder.reportType')"
-            :rules="[(val) => !!val || $t('reportConfig.validation.reportTypeRequired')]"
-            :readonly="isEdit"
-            outlined
-            dense
-          >
-            <template #append v-if="isEdit">
-              <q-icon name="lock" color="grey">
-                <q-tooltip>{{ $t('reportConfig.hints.reportTypeUnique') }}</q-tooltip>
-              </q-icon>
-            </template>
-          </q-input>
-
           <!-- 报表名称 -->
           <q-input
             v-model="formData.reportName"
@@ -36,19 +19,116 @@
             dense
           />
 
-          <!-- Cron表达式 -->
-          <q-input
-            v-model="formData.cronExpression"
-            :label="$t('reportConfig.cronExpression')"
-            :placeholder="$t('reportConfig.placeholder.cronExpression')"
-            :rules="[(val) => !!val || $t('reportConfig.validation.cronExpressionRequired')]"
-            outlined
-            dense
-          >
-            <template #hint>
-              {{ $t('reportConfig.hints.cronExpression') }}
-            </template>
-          </q-input>
+          <!-- 定时配置 -->
+          <div class="q-gutter-sm">
+            <div class="text-subtitle2">{{ $t('reportConfig.scheduleConfig') }}</div>
+
+            <!-- 配置模式切换 -->
+            <q-toggle
+              v-model="useAdvancedCron"
+              :label="$t('reportConfig.useAdvancedCron')"
+              color="primary"
+              size="sm"
+            />
+
+            <!-- 简单模式 -->
+            <div v-if="!useAdvancedCron" class="q-gutter-sm">
+              <!-- 执行频率 -->
+              <q-select
+                v-model="scheduleConfig.frequency"
+                :options="frequencyOptions"
+                :label="$t('reportConfig.frequency')"
+                emit-value
+                map-options
+                outlined
+                dense
+                @update:model-value="updateCronExpression"
+              />
+
+              <!-- 执行日期（每月模式） -->
+              <q-select
+                v-if="scheduleConfig.frequency === 'monthly'"
+                v-model="scheduleConfig.dayOfMonth"
+                :options="dayOfMonthOptions"
+                :label="$t('reportConfig.dayOfMonth')"
+                emit-value
+                map-options
+                outlined
+                dense
+                @update:model-value="updateCronExpression"
+              />
+
+              <!-- 执行星期（每周模式） -->
+              <q-select
+                v-if="scheduleConfig.frequency === 'weekly'"
+                v-model="scheduleConfig.dayOfWeek"
+                :options="dayOfWeekOptions"
+                :label="$t('reportConfig.dayOfWeek')"
+                emit-value
+                map-options
+                outlined
+                dense
+                @update:model-value="updateCronExpression"
+              />
+
+              <!-- 执行时间 -->
+              <div class="row q-gutter-sm">
+                <div class="col">
+                  <q-select
+                    v-model="scheduleConfig.hour"
+                    :options="hourOptions"
+                    :label="$t('reportConfig.hour')"
+                    emit-value
+                    map-options
+                    outlined
+                    dense
+                    @update:model-value="updateCronExpression"
+                  />
+                </div>
+                <div class="col">
+                  <q-select
+                    v-model="scheduleConfig.minute"
+                    :options="minuteOptions"
+                    :label="$t('reportConfig.minute')"
+                    emit-value
+                    map-options
+                    outlined
+                    dense
+                    @update:model-value="updateCronExpression"
+                  />
+                </div>
+              </div>
+
+              <!-- 显示生成的CRON表达式 -->
+              <q-banner dense class="bg-grey-2 text-grey-8">
+                <template #avatar>
+                  <q-icon name="schedule" color="primary" />
+                </template>
+                <div class="text-caption">
+                  {{ $t('reportConfig.generatedCron') }}:
+                  <strong>{{ formData.cronExpression }}</strong>
+                </div>
+                <div class="text-caption text-grey-7">
+                  {{ getCronDescription() }}
+                </div>
+              </q-banner>
+            </div>
+
+            <!-- 高级模式 - 直接输入CRON表达式 -->
+            <q-input
+              v-else
+              v-model="formData.cronExpression"
+              :label="$t('reportConfig.cronExpression')"
+              :placeholder="$t('reportConfig.placeholder.cronExpression')"
+              :rules="[(val) => !!val || $t('reportConfig.validation.cronExpressionRequired')]"
+              outlined
+              dense
+            >
+              <template #hint>
+                {{ $t('reportConfig.hints.cronExpression') }}
+              </template>
+            </q-input>
+          </div>
 
           <!-- 接收邮箱列表 -->
           <q-select
@@ -69,6 +149,32 @@
             dense
             @new-value="createEmail"
           />
+
+          <!-- 抄送邮箱列表 -->
+          <q-select
+            v-model="formData.ccEmailsArray"
+            :label="$t('reportConfig.ccEmails')"
+            :placeholder="$t('reportConfig.placeholder.ccEmails')"
+            :rules="[
+              (val) =>
+                !val ||
+                val.length === 0 ||
+                validateEmails(val) ||
+                $t('reportConfig.validation.emailFormat'),
+            ]"
+            use-input
+            use-chips
+            multiple
+            input-debounce="0"
+            new-value-mode="add-unique"
+            outlined
+            dense
+            @new-value="createEmail"
+          >
+            <template #hint>
+              {{ $t('reportConfig.hints.ccEmails') }}
+            </template>
+          </q-select>
 
           <!-- 项目编号列表 -->
           <q-select
@@ -96,6 +202,26 @@
                   {{ $t('reportConfig.noProjectsFound') }}
                 </q-item-section>
               </q-item>
+            </template>
+          </q-select>
+
+          <!-- 月份偏移量 -->
+          <q-select
+            v-model="formData.monthOffset"
+            :options="monthOffsetOptions"
+            :label="$t('reportConfig.monthOffset')"
+            :rules="[
+              (val) =>
+                (val !== null && val !== undefined) ||
+                $t('reportConfig.validation.monthOffsetRequired'),
+            ]"
+            emit-value
+            map-options
+            outlined
+            dense
+          >
+            <template #hint>
+              {{ $t('reportConfig.hints.monthOffset') }}
             </template>
           </q-select>
 
@@ -171,6 +297,18 @@ const emit = defineEmits<Emits>();
 
 const { t } = useI18n();
 
+// 是否使用高级CRON模式
+const useAdvancedCron = ref(false);
+
+// 简单模式的调度配置
+const scheduleConfig = ref({
+  frequency: 'monthly' as 'daily' | 'weekly' | 'monthly',
+  dayOfMonth: 1,
+  dayOfWeek: 1,
+  hour: 9,
+  minute: 0,
+});
+
 // 对话框显示状态
 const dialogVisible = computed({
   get: () => props.modelValue,
@@ -187,15 +325,152 @@ const dialogTitle = computed(() =>
 
 // 表单数据
 const formData = ref<ReportConfig>({
-  reportType: '',
   reportName: '',
   cronExpression: '',
   recipientEmails: '',
   recipientEmailsArray: [],
+  ccEmails: '',
+  ccEmailsArray: [],
   projectCodes: [],
+  monthOffset: -1,
   isEnabled: true,
   description: '',
 });
+
+// 月份偏移量选项
+const monthOffsetOptions = computed(() => [
+  { label: t('reportConfig.monthOffsetOptions.currentMonth'), value: 0 },
+  { label: t('reportConfig.monthOffsetOptions.lastMonth'), value: -1 },
+  { label: t('reportConfig.monthOffsetOptions.twoMonthsAgo'), value: -2 },
+  { label: t('reportConfig.monthOffsetOptions.threeMonthsAgo'), value: -3 },
+  { label: t('reportConfig.monthOffsetOptions.fourMonthsAgo'), value: -4 },
+  { label: t('reportConfig.monthOffsetOptions.fiveMonthsAgo'), value: -5 },
+  { label: t('reportConfig.monthOffsetOptions.sixMonthsAgo'), value: -6 },
+]);
+
+// 频率选项
+const frequencyOptions = computed(() => [
+  { label: t('reportConfig.frequencyOptions.daily'), value: 'daily' },
+  { label: t('reportConfig.frequencyOptions.weekly'), value: 'weekly' },
+  { label: t('reportConfig.frequencyOptions.monthly'), value: 'monthly' },
+]);
+
+// 月份的某一天选项 (1-31)
+const dayOfMonthOptions = computed(() =>
+  Array.from({ length: 31 }, (_, i) => ({
+    label: t('reportConfig.dayLabel', { day: i + 1 }),
+    value: i + 1,
+  })),
+);
+
+// 星期选项 (1-7: 周一到周日)
+const dayOfWeekOptions = computed(() => [
+  { label: t('reportConfig.weekDays.monday'), value: 1 },
+  { label: t('reportConfig.weekDays.tuesday'), value: 2 },
+  { label: t('reportConfig.weekDays.wednesday'), value: 3 },
+  { label: t('reportConfig.weekDays.thursday'), value: 4 },
+  { label: t('reportConfig.weekDays.friday'), value: 5 },
+  { label: t('reportConfig.weekDays.saturday'), value: 6 },
+  { label: t('reportConfig.weekDays.sunday'), value: 0 },
+]);
+
+// 小时选项 (0-23)
+const hourOptions = computed(() =>
+  Array.from({ length: 24 }, (_, i) => ({
+    label: `${String(i).padStart(2, '0')}:00`,
+    value: i,
+  })),
+);
+
+// 分钟选项 (0, 15, 30, 45)
+const minuteOptions = computed(() => [
+  { label: '00', value: 0 },
+  { label: '15', value: 15 },
+  { label: '30', value: 30 },
+  { label: '45', value: 45 },
+]);
+
+// 根据简单配置生成CRON表达式
+const updateCronExpression = () => {
+  const { frequency, dayOfMonth, dayOfWeek, hour, minute } = scheduleConfig.value;
+
+  switch (frequency) {
+    case 'daily':
+      // 每天执行: 分 时 * * *
+      formData.value.cronExpression = `0 ${minute} ${hour} * * *`;
+      break;
+    case 'weekly':
+      // 每周执行: 分 时 * * 星期
+      formData.value.cronExpression = `0 ${minute} ${hour} * * ${dayOfWeek}`;
+      break;
+    case 'monthly':
+      // 每月执行: 分 时 日 * *
+      formData.value.cronExpression = `0 ${minute} ${hour} ${dayOfMonth} * *`;
+      break;
+  }
+};
+
+// 从CRON表达式解析配置（简单解析，支持常见格式）
+const parseCronExpression = (cronExpr: string) => {
+  if (!cronExpr) return;
+
+  const parts = cronExpr.trim().split(/\s+/);
+  if (parts.length !== 6) return; // 不是标准的6段式CRON
+
+  const [second, minute, hour, dayOfMonth, month, dayOfWeek] = parts;
+
+  // 只解析简单的数字形式
+  if (second !== '0') return; // 秒必须是0
+
+  const minuteNum = parseInt(minute || '0', 10);
+  const hourNum = parseInt(hour || '0', 10);
+
+  if (isNaN(minuteNum) || isNaN(hourNum)) return;
+
+  scheduleConfig.value.minute = minuteNum;
+  scheduleConfig.value.hour = hourNum;
+
+  // 判断频率
+  if (dayOfMonth === '*' && month === '*' && dayOfWeek === '*') {
+    scheduleConfig.value.frequency = 'daily';
+  } else if (dayOfMonth === '*' && month === '*' && dayOfWeek !== '*') {
+    scheduleConfig.value.frequency = 'weekly';
+    const dayNum = parseInt(dayOfWeek || '0', 10);
+    if (!isNaN(dayNum)) {
+      scheduleConfig.value.dayOfWeek = dayNum;
+    }
+  } else if (dayOfMonth !== '*' && month === '*' && dayOfWeek === '*') {
+    scheduleConfig.value.frequency = 'monthly';
+    const dayNum = parseInt(dayOfMonth || '1', 10);
+    if (!isNaN(dayNum)) {
+      scheduleConfig.value.dayOfMonth = dayNum;
+    }
+  } else {
+    // 复杂的CRON表达式，切换到高级模式
+    useAdvancedCron.value = true;
+  }
+};
+
+// 获取CRON描述
+const getCronDescription = () => {
+  const { frequency, dayOfMonth, dayOfWeek, hour, minute } = scheduleConfig.value;
+  const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+  switch (frequency) {
+    case 'daily': {
+      return t('reportConfig.cronDescription.daily', { time: timeStr });
+    }
+    case 'weekly': {
+      const weekDayName = dayOfWeekOptions.value.find((d) => d.value === dayOfWeek)?.label || '';
+      return t('reportConfig.cronDescription.weekly', { day: weekDayName, time: timeStr });
+    }
+    case 'monthly': {
+      return t('reportConfig.cronDescription.monthly', { day: dayOfMonth, time: timeStr });
+    }
+    default:
+      return '';
+  }
+};
 
 // 项目列表
 const projectList = ref<Project[]>([]);
@@ -285,20 +560,40 @@ watch(
           ...props.reportConfig,
           // 确保数组字段正确初始化
           recipientEmailsArray: props.reportConfig.recipientEmailsArray || [],
+          ccEmailsArray: props.reportConfig.ccEmailsArray || [],
           projectCodes: props.reportConfig.projectCodes || [],
+          monthOffset:
+            props.reportConfig.monthOffset !== undefined ? props.reportConfig.monthOffset : -1,
         };
+
+        // 尝试解析现有的CRON表达式
+        if (props.reportConfig.cronExpression) {
+          parseCronExpression(props.reportConfig.cronExpression);
+        }
       } else {
         // 创建模式：重置表单
         formData.value = {
-          reportType: '',
           reportName: '',
-          cronExpression: '',
+          cronExpression: '0 0 9 1 * *', // 默认：每月1号上午9点
           recipientEmails: '',
           recipientEmailsArray: [],
+          ccEmails: '',
+          ccEmailsArray: [],
           projectCodes: [],
+          monthOffset: -1,
           isEnabled: true,
           description: '',
         };
+
+        // 重置简单配置为默认值
+        scheduleConfig.value = {
+          frequency: 'monthly',
+          dayOfMonth: 1,
+          dayOfWeek: 1,
+          hour: 9,
+          minute: 0,
+        };
+        useAdvancedCron.value = false;
       }
     }
   },
@@ -310,7 +605,9 @@ const onSubmit = () => {
     ...formData.value,
     // 保留数组字段用于API转换
     recipientEmailsArray: formData.value.recipientEmailsArray || [],
+    ccEmailsArray: formData.value.ccEmailsArray || [],
     projectCodes: formData.value.projectCodes || [],
+    monthOffset: formData.value.monthOffset !== undefined ? formData.value.monthOffset : -1,
   };
 
   emit('save', submitData);

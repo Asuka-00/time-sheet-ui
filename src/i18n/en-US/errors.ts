@@ -95,6 +95,23 @@ export default {
     },
   },
 
+  // Report Configuration module
+  REPORT_CONFIG: {
+    CREATE: {
+      TYPE_ALREADY_EXISTS: 'Report type already exists',
+    },
+    UPDATE: {
+      NOT_FOUND: 'Report configuration not found',
+    },
+    DELETE: {
+      NOT_FOUND: 'Report configuration not found',
+    },
+    COMMON: {
+      NOT_FOUND: 'Report configuration not found',
+      ID_REQUIRED: 'Report configuration ID is required',
+    },
+  },
+
   // Timesheet module
   TIMESHEET: {
     CREATE: {
@@ -103,6 +120,7 @@ export default {
       NOT_PROJECT_MEMBER: 'You are not a member of this project',
       FUTURE_DATE_NOT_ALLOWED: 'Cannot submit timesheets for future dates',
       DUPLICATE_RECORD: 'A timesheet record already exists for this project on this date',
+      HOLIDAY_NOT_ALLOWED: 'Cannot submit timesheets on holidays',
     },
     SUBMIT: {
       NOT_OWNER: 'Can only submit your own timesheets',
@@ -119,6 +137,7 @@ export default {
       PROJECT_NOT_IN_PROGRESS: 'Can only submit timesheets for projects in progress',
       NOT_PROJECT_MEMBER: 'You are not a member of this project',
       FUTURE_DATE_NOT_ALLOWED: 'Cannot submit timesheets for future dates',
+      HOLIDAY_NOT_ALLOWED: 'Cannot submit timesheets on holidays',
     },
     DELETE: {
       NOT_OWNER: 'Can only delete your own timesheets',
@@ -132,5 +151,15 @@ export default {
       NOT_FOUND: 'Timesheet record not found',
     },
   },
-};
 
+  // WebSocket module
+  WEBSOCKET: {
+    AUTH: {
+      NO_TOKEN: 'WebSocket connection missing authentication token',
+      INVALID_TOKEN: 'Invalid WebSocket authentication token',
+    },
+    CONNECTION: {
+      FAILED: 'WebSocket connection failed',
+    },
+  },
+};

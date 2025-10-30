@@ -5,13 +5,15 @@ import type { PageQuery, PageResult } from './common';
  */
 export interface ReportConfig {
   uuid?: string;
-  reportType: string;
   reportName: string;
   cronExpression: string;
   recipientEmails: string; // 逗号分隔的字符串
   recipientEmailsArray?: string[]; // 数组形式（VO返回）
+  ccEmails?: string; // 抄送邮箱（逗号分隔的字符串）
+  ccEmailsArray?: string[]; // 抄送邮箱数组形式（VO返回）
   filterConditions?: string; // 逗号分隔的项目编号字符串
   projectCodes?: string[]; // 数组形式（VO返回）
+  monthOffset: number; // 月份偏移量 (0:当月, -1:上月, -2:上上月...)
   isEnabled: boolean;
   description?: string;
   createdBy?: string;
